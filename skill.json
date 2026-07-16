@@ -1,0 +1,24 @@
+{
+  "name": "awesome-osint-operator",
+  "display_name": "Awesome OSINT Operator",
+  "version": "1.1.0",
+  "entrypoint": "SKILL.md",
+  "languages": [
+    "en",
+    "zh-CN"
+  ],
+  "license": "CC-BY-SA-4.0",
+  "source": "https://github.com/jivoi/awesome-osint",
+  "capabilities": [
+    "tool-selection",
+    "investigation-planning",
+    "fact-checking",
+    "evidence-logging",
+    "monitoring",
+    "reporting",
+    "visual-clue-inventory",
+    "multi-signal-geolocation",
+    "candidate-falsification",
+    "geometric-verification"
+  ]
+}
