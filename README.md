@@ -1,71 +1,152 @@
-# Awesome OSINT Operator Skill v1.1.0
+# RZK // THE HUNTER
 
-这不是把 `awesome-osint` 的链接机械地塞进一个提示词，而是把它升级成一套**可执行的 OSINT 调研系统**：任务分流、工具检索、风险控制、证据台账、交叉验证、置信度评级和报告模板都已经打包。
+## Field Intelligence Operations Manual
 
-## 它比原始列表多了什么
+> **ROZOOKA INDUSTRIES**<br>
+> Intelligence Systems Division<br>
+> Package designation: `awesome-osint-operator`<br>
+> Release: `v1.1.0`<br>
+> Handling: Public-source intelligence only
 
-- 把 1,349 个工具整理成结构化 JSON/CSV 目录
-- 支持中英文关键词检索和工作流选型
-- 默认屏蔽高风险工具，敏感场景必须经过安全门
-- 覆盖域名、公司、用户名、人物公共利益调查、邮箱/电话防御性核查、图片与地理定位、新闻核验、威胁情报、监控
-- 内置证据台账、来源质量、置信度与最终报告模板
-- 图片/视频任务新增“全画面线索收割”：先盘点再搜索，记录替代读法、负面线索和来源血缘
-- 精确地理定位新增多候选评分、近似物体排除、相机—物体—道路几何验证和强制反证门槛
-- 可从上游仓库一键同步并重新生成目录
-- 完整保留 CC BY-SA 4.0 署名与相同方式共享要求
+The Hunter is a field-ready OSINT operating system for turning open web research into traceable, defensible intelligence.
 
-## 快速使用
+This is not a link dump. It is a disciplined workflow for scoping a mission, selecting the right tools, preserving evidence, testing competing hypotheses, and reporting only what the record can support.
 
-把整个 `awesome-osint-operator` 文件夹放到支持 `SKILL.md` 的 skills 目录，或直接让 Agent 读取 `SKILL.md`。
+## Mission Profile
 
-常用命令：
+The package is built for researchers, investigators, analysts, journalists, and security teams working with lawful public sources.
 
-```bash
-# 搜工具
-python scripts/search_catalog.py "域名 DNS 证书 历史" --top 10
+It covers:
 
-# 按工作流自动选工具
-python scripts/select_tools.py --workflow image --per-stage 2
+- domain and infrastructure research
+- company and organization mapping
+- username and social-account research
+- public-interest people research
+- defensive email and phone exposure checks
+- image and video provenance
+- geolocation and scene verification
+- news and claim verification
+- defensive threat intelligence
+- monitoring plans and escalation rules
 
-# 初始化证据台账
-python scripts/evidence_ledger.py init case/evidence.csv
+## Operating Doctrine
 
-# 初始化图片/视频地理定位案件
-python scripts/visual_case.py init case/image-001
+Every operation begins with a scope and a stop condition. Every material claim is tied to a source. Every conclusion is separated into fact, inference, and unknown.
 
-# 对候选地点矩阵汇总评分（评分不能覆盖直接矛盾）
-python scripts/visual_case.py score case/image-001/location-candidates.csv
+The Hunter follows these rules:
 
-# 同步上游目录
-python scripts/sync_catalog.py
+1. Use public and lawfully accessible sources only.
+2. Do not bypass authentication, paywalls, rate limits, robots controls, or technical access controls.
+3. Collect the minimum personal data necessary for the stated purpose.
+4. Never obtain, expose, or redistribute credentials, tokens, private keys, raw breach data, or stealer-log contents.
+5. Do not support doxxing, stalking, harassment, covert tracking, invasive profiling, or biometric identification of private people.
+6. Keep threat intelligence defensive: work with hashes, IOCs, reports, sandbox summaries, and vendor analysis.
+7. Verify freshness, provenance, identity, timestamps, source independence, and contradictory evidence.
+8. For exact geolocation, require clue diversity, geometric verification, and deliberate rejection of near-matches.
 
-# 完整性检查
-python scripts/verify_package.py
+Read [`references/safety-policy.md`](references/safety-policy.md) before any guarded investigation involving people, usernames, email, phone, breach exposure, dark-web references, or threat actors.
+
+## Deployment
+
+Place the package in your agent's skills directory, or point the agent directly at `SKILL.md`.
+
+```text
+awesome-osint-operator/
+├── SKILL.md
+├── references/
+├── scripts/
+├── templates/
+├── tests/
+└── workflows/
 ```
 
-## 推荐提示词
+The primary operating instructions live in [`SKILL.md`](SKILL.md). The rest of the package provides the catalog, playbooks, evidence tools, templates, and validation suite.
 
-- “调查这个域名的注册、DNS、证书、历史页面和风险信号，先给计划再执行。”
-- “核验这张图片最早出现在哪里，判断拍摄地点和时间，列出证据与反证。”
-- “给我做一份公司尽调，只看公开合法来源，区分事实、推断和未知。”
-- “检查我自己的邮箱是否有泄露风险，只报告暴露状态和修复建议，不展示任何密码或泄露数据。”
-- “建立一个新闻事件监控方案，定义关键词、来源、去重、置信度和升级条件。”
+## Field Kit
 
-## 目录
+### Search the catalog
 
-- `SKILL.md`：主执行规范
-- `references/catalog.json`：结构化工具库
-- `scripts/search_catalog.py`：中英文工具搜索
-- `scripts/select_tools.py`：按调查阶段自动选型
-- `scripts/evidence_ledger.py`：证据台账
-- `scripts/visual_case.py`：初始化视觉调查台账并汇总候选评分
-- `references/visual-clue-taxonomy.md`：全画面线索分类与采集规范
-- `templates/visual-clue-inventory.csv`：视觉线索清单
-- `templates/location-candidate-matrix.csv`：候选地点交叉验证矩阵
-- `workflows/`：专项工作流
-- `templates/`：调查计划、证据、发现与报告模板
-- `references/source/`：上游 README 快照
+```bash
+python scripts/search_catalog.py "domain DNS certificates history" --top 10
+python scripts/search_catalog.py "company ownership public filings" --top 10
+```
 
-## 来源与许可证
+### Select tools by workflow
 
-本项目改编自 [jivoi/awesome-osint](https://github.com/jivoi/awesome-osint)，上游内容采用 CC BY-SA 4.0。快照获取时间：`2026-07-13T08:03:02+00:00`，SHA-256：`5071f31d2e0fda75368b9021091b77d74a6824895ca953b5bc1cc109401a474b`。详见 `ATTRIBUTION.md` 与 `LICENSE.txt`。
+```bash
+python scripts/select_tools.py --workflow domain --per-stage 2
+python scripts/select_tools.py --workflow image --per-stage 2
+```
+
+### Open an evidence ledger
+
+```bash
+python scripts/evidence_ledger.py init case/evidence.csv
+python scripts/evidence_ledger.py add case/evidence.csv \
+  --claim "Example claim" \
+  --source-url "https://example.org/source" \
+  --source-title "Source title" \
+  --source-type primary \
+  --confidence medium \
+  --notes "What the source supports and what it does not"
+```
+
+### Start a visual case
+
+```bash
+python scripts/visual_case.py init case/image-001
+python scripts/visual_case.py score case/image-001/location-candidates.csv
+```
+
+### Maintain and verify the package
+
+```bash
+python scripts/sync_catalog.py
+python scripts/verify_package.py
+python -m unittest discover -s tests -v
+```
+
+## Standard Reporting Format
+
+Use the following structure for an operational report:
+
+1. Executive summary
+2. Scope, authorization, and limitations
+3. Key findings with confidence
+4. Evidence table
+5. Timeline or relationship map, when useful
+6. Contradictions and unresolved questions
+7. Methods and tools used
+8. Privacy and handling notes
+9. Sources
+
+Label conclusions precisely:
+
+- **Verified fact** — directly supported by an authoritative source.
+- **Corroborated inference** — supported by multiple independent signals.
+- **Single-source lead** — useful direction, not a conclusion.
+- **Unresolved / unknown** — the record is insufficient.
+
+## Package Layout
+
+| Asset | Role |
+| --- | --- |
+| [`SKILL.md`](SKILL.md) | Core operating doctrine and execution rules |
+| `references/catalog.json` / `catalog.csv` | Structured tool catalog |
+| `references/` | Safety policy, confidence rubric, taxonomy, query playbook, and source snapshot |
+| `workflows/` | Mission-specific operating procedures |
+| `templates/` | Investigation plans, evidence ledgers, clue inventories, matrices, and report formats |
+| `scripts/` | Catalog search, workflow selection, evidence tracking, visual cases, synchronization, and verification |
+| `tests/` | Package integrity and catalog tests |
+
+## Provenance
+
+This package is an adaptation of [`jivoi/awesome-osint`](https://github.com/jivoi/awesome-osint). The upstream source snapshot is distributed under **CC BY-SA 4.0**. Preserve [`ATTRIBUTION.md`](ATTRIBUTION.md) and [`LICENSE.txt`](LICENSE.txt) when redistributing or adapting the package.
+
+Catalog snapshot timestamp: `2026-07-13T08:03:02+00:00`<br>
+Snapshot SHA-256: `5071f31d2e0fda75368b9021091b77d74a6824895ca953b5bc1cc109401a474b`
+
+---
+
+**RZK // ROZOOKA INDUSTRIES**<br>
+Signal over spectacle. Evidence over instinct.
