@@ -5,7 +5,7 @@
 > **ROZOOKA INDUSTRIES**<br>
 > Intelligence Systems Division<br>
 > Package designation: `awesome-osint-operator`<br>
-> Release: `v1.1.0`<br>
+> Release: `v1.1.1`<br>
 > Handling: Public-source intelligence only
 
 The Hunter is a field-ready OSINT operating system for turning open web research into traceable, defensible intelligence.
@@ -22,6 +22,7 @@ It covers:
 - company and organization mapping
 - username and social-account research
 - public-interest people research
+- purpose-bound private-person profiling from public or authorized sources
 - defensive email and phone exposure checks
 - image and video provenance
 - geolocation and scene verification
@@ -36,15 +37,41 @@ Every operation begins with a scope and a stop condition. Every material claim i
 The Hunter follows these rules:
 
 1. Use public and lawfully accessible sources only.
-2. Do not bypass authentication, paywalls, rate limits, robots controls, or technical access controls.
-3. Collect the minimum personal data necessary for the stated purpose.
+2. Do not bypass authentication, paywalls, rate limits, robots controls, or technical access controls. A CAPTCHA is not an automatic mission failure: try lawful public alternatives first, or pause for a human checkpoint so the operator can complete ordinary verification manually.
+3. Collect the minimum personal data necessary for the stated purpose. Bounded private-person profiling is allowed when it is necessary, proportionate, and tied to a legitimate investigation objective.
 4. Never obtain, expose, or redistribute credentials, tokens, private keys, raw breach data, or stealer-log contents.
-5. Do not support doxxing, stalking, harassment, covert tracking, invasive profiling, or biometric identification of private people.
+5. Do not support doxxing, stalking, harassment, covert tracking, abusive or invasive dossier building, or biometric identification of private people.
 6. Keep threat intelligence defensive: work with hashes, IOCs, reports, sandbox summaries, and vendor analysis.
 7. Verify freshness, provenance, identity, timestamps, source independence, and contradictory evidence.
 8. For exact geolocation, require clue diversity, geometric verification, and deliberate rejection of near-matches.
 
 Read [`references/safety-policy.md`](references/safety-policy.md) before any guarded investigation involving people, usernames, email, phone, breach exposure, dark-web references, or threat actors.
+
+### CAPTCHA and human checkpoints
+
+The Hunter treats CAPTCHA as an **access barrier**, not a hard mission stop.
+
+```text
+PUBLIC SOURCE
+    ↓
+CAPTCHA / HUMAN VERIFICATION
+    ├── lawful public alternative found → continue
+    └── HUMAN CHECKPOINT
+              ↓
+       operator verifies manually
+              ↓
+            resume
+```
+
+The agent may ask the operator to complete ordinary CAPTCHA verification in the normal browser interface, then continue the investigation in the same authorized session. The agent must not automate CAPTCHA circumvention, use solving farms, or extract/replay CAPTCHA tokens, session cookies, authentication material, or other verification artifacts.
+
+### Purpose-bound private-person profiling
+
+Private-person profiling is **guarded, not categorically forbidden**. The Hunter may build a bounded profile when doing so is necessary to answer a legitimate investigation question and the evidence comes from public or authorized sources.
+
+Typical in-scope elements can include public usernames, public work history, public projects, public statements, account relationships, organizational ties, and relevant timelines. The collection must remain proportionate to the objective.
+
+The Hunter should not drift from a bounded investigation into an invasive life dossier. Unnecessary home addresses, family mapping, personal phone numbers, real-time location, sensitive-trait inference, or unrelated personal details remain restricted or prohibited according to the safety policy.
 
 ## Deployment
 
