@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+- Added lawful human CAPTCHA checkpoints without allowing automated CAPTCHA circumvention or verification-token handling
+- Clarified purpose-bound private-person profiling rules and proportionality limits
+- Unified package version metadata and release validation around a canonical `VERSION` file
+
 ## 1.1.0
 
 - Rebuilt the image/video geolocation workflow around exhaustive clue harvesting before search
