@@ -10,6 +10,8 @@
 - Enabled bounded public-source location inference for verified wanted-person cases, including recent-location clue correlation and exact geolocation when evidence supports it
 - Added mandatory freshness labels, confidence, contradiction/falsification checks, and official-status rechecks before finalizing a location finding
 - Added wanted-person capabilities to `skill.json` and synchronized package metadata, documentation, and release markers to `1.3.0`
+- Added package-integrity checks that fail CI if the wanted-person workflow drifts out of the manifest, core routing, metadata, safety policy, README, or people-research handoff
+- Upgraded the release pipeline so a verified `main` build can create the missing version tag and publish the matching GitHub Release automatically, while refusing mismatched tags or duplicate releases
 - Preserved hard boundaries against private-account access, credential/breach data, device/carrier/brokered telemetry, deception, third-party contact, continuous live surveillance, and tactical apprehension guidance
 
 ## 1.2.0
