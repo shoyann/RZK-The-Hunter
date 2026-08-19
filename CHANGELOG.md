@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0
+
+- Added a mandatory primary-evidence queue so unresolved first-party artifacts block final convergence
+- Added an explicit hypothesis ledger with support, contradictions, falsifiers, independence, and state transitions
+- Added a convergence gate that separates plausible/high-confidence findings from submission-safe final answers
+- Added a rejection/retry loop modeled on agentic test-fail-inspect-revise-retest behavior; rejected answers now reopen evidence instead of encouraging wording brute force
+- Added structured visual-carrier handling for alternate QR/barcode/layered-artifact decodes when rotation, mirror, inversion, or other transformations are source-signaled or structurally motivated
+- Added `references/hypothesis-convergence.md` with a reusable investigation state machine and premature-convergence controls
+- Hardened the evidence-confidence rubric against search-coincidence clusters and unprocessed primary evidence
+
 ## 1.1.1
 
 - Added lawful human CAPTCHA checkpoints without allowing automated CAPTCHA circumvention or verification-token handling
