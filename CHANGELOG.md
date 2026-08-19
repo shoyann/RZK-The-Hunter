@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added a guarded `wanted-person-location-intelligence` workflow for adults covered by an active official wanted/fugitive notice
+- Added an activation gate requiring official status verification, identity matching, lawful purpose, adult target status, and public/lawfully supplied evidence
+- Enabled bounded public-source location inference for verified wanted-person cases, including recent-location clue correlation and exact geolocation when evidence supports it
+- Added mandatory freshness labels, confidence, contradiction/falsification checks, and official-status rechecks before finalizing a location finding
+- Preserved hard boundaries against private-account access, credential/breach data, device/carrier/brokered telemetry, deception, third-party contact, continuous live surveillance, and tactical apprehension guidance
+
 ## 1.2.0
 
 - Added a mandatory primary-evidence queue so unresolved first-party artifacts block final convergence
@@ -23,7 +31,6 @@
 - Added parallel search lanes, multi-candidate scoring, source-lineage controls, exact-object matching, and deliberate falsification
 - Added a strict camera/object/road geometry gate for exact street and building answers
 - Added visual clue, candidate matrix, and image geolocation report templates
-- Added `scripts/visual_case.py` to initialize cases and aggregate candidate scores
 - Added a worked example showing how to avoid a single-clue near-match failure
 
 ## 1.0.0
