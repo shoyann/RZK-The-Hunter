@@ -2,10 +2,14 @@
 
 ## Unreleased
 
-- Added a guarded `wanted-person-location-intelligence` workflow for adults covered by an active official wanted/fugitive notice
-- Added an activation gate requiring official status verification, identity matching, lawful purpose, adult target status, and public/lawfully supplied evidence
+## 1.3.0
+
+- Promoted the guarded `wanted-person-location-intelligence` workflow into the released package for adults covered by an active official wanted/fugitive notice
+- Added direct routing from `SKILL.md` for verified official wanted/fugitive cases instead of relying only on the generic people-research workflow
+- Added activation requirements for official status verification, identity matching, lawful purpose, adult target status, and public/lawfully supplied evidence
 - Enabled bounded public-source location inference for verified wanted-person cases, including recent-location clue correlation and exact geolocation when evidence supports it
 - Added mandatory freshness labels, confidence, contradiction/falsification checks, and official-status rechecks before finalizing a location finding
+- Added wanted-person capabilities to `skill.json` and synchronized package metadata, documentation, and release markers to `1.3.0`
 - Preserved hard boundaries against private-account access, credential/breach data, device/carrier/brokered telemetry, deception, third-party contact, continuous live surveillance, and tactical apprehension guidance
 
 ## 1.2.0
