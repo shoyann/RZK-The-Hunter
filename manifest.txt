@@ -12,6 +12,7 @@ manifest.txt
 references/catalog.csv
 references/catalog.json
 references/evidence-confidence.md
+references/hypothesis-convergence.md
 references/query-playbook.md
 references/safety-policy.md
 references/source/awesome-osint-README.md
