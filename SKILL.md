@@ -2,7 +2,7 @@
 name: awesome-osint-operator
 description: Ethical, evidence-first OSINT planning, tool selection, verification, monitoring, and reporting using a structured catalog adapted from jivoi/awesome-osint. Use for public-source domain, company, username, image, geospatial, news, fact-checking, and defensive threat-intelligence research. Do not use for doxxing, stalking, credential acquisition, access bypass, real-time tracking, or abusive/invasive profiling.
 license: CC-BY-SA-4.0
-version: 1.1.1
+version: 1.2.0
 ---
 
 # Awesome OSINT Operator
@@ -19,11 +19,14 @@ Turn a giant tool list into a disciplined investigation workflow. The catalog is
 6. **Threat intelligence stays defensive.** Prefer hashes, IOCs, reports, sandbox summaries, and vendor analysis. Do not execute malware or download samples unless the user has explicit authorization and a dedicated safe environment.
 7. **Verify freshness.** Tools and facts change. Check current availability, terms, and dates before relying on a catalog entry.
 8. **Cite every material claim.** Preserve source URL, title, publisher, publication date, access time, and a short supporting excerpt or note.
-9. **Separate fact, inference, and unknown.** State confidence and contradictions explicitly.
+9. **Separate fact, inference, hypothesis, and unknown.** State confidence, contradictions, and what remains untested explicitly.
 10. **Do not dump hundreds of links.** Select the smallest useful set—normally 3–7 tools—explain why each is chosen, and include a fallback.
 11. **For images and video, inventory before searching.** Sweep the entire frame, record alternate readings, keep multiple candidates alive, and require independent clue families plus geometric verification before a precise location answer.
+12. **Do not finalize while material first-party evidence remains unprocessed.** Original files, explicit source hints, embedded resources, metadata, source code, alternate views, and relevant low-risk transformations must be resolved or deliberately ruled out before a lead becomes submission-safe.
+13. **A rejected answer is evidence.** Do not keep mutating wording around the same unsupported hypothesis. Roll back to the last verified checkpoint, mark the failed hypothesis, reopen unresolved evidence, change one assumption at a time, and continue the loop.
 
 Read `references/safety-policy.md` before any people, username, email, phone, breach, dark-web, or threat-actor task.
+Read `references/hypothesis-convergence.md` before any multi-stage investigation, puzzle-like artifact chain, or task where a plausible early answer could be overturned by later evidence.
 
 ## Default workflow
 
@@ -59,7 +62,14 @@ Choose the matching workflow:
 
 Start from hypotheses and questions, not tools. Define what evidence would confirm or falsify each hypothesis.
 
-For image/video tasks, first read `references/visual-clue-taxonomy.md` and create a clue inventory from `templates/visual-clue-inventory.csv`. Do not let the first readable sign, plaque, face, logo, or reverse-image hit become the answer.
+Create two explicit queues before deep searching:
+
+- **Primary-evidence queue:** original files, direct URLs, embedded assets, metadata, source code, archives, attachments, alternate representations, and source-provided hints that have not yet been tested.
+- **Hypothesis ledger:** each candidate explanation with its supporting evidence, contradictions, falsifier, confidence, and status (`open`, `leading`, `contradicted`, `verified`).
+
+For image/video tasks, first read `references/visual-clue-taxonomy.md` and create a clue inventory from `templates/visual-clue-inventory.csv`. Do not let the first readable sign, plaque, face, logo, QR payload, or reverse-image hit become the answer.
+
+For structured visual carriers such as QR codes, barcodes, steganographic layouts, or deliberately transformed puzzle artifacts, preserve every reproducible decode separately and test source-signaled transformations such as rotation, mirror, inversion, threshold/channel changes, or alternate layers before treating one valid payload as exhaustive.
 
 ### 3. Select tools from the catalog
 
@@ -95,6 +105,8 @@ Use this source order unless the workflow says otherwise:
 5. Secondary reporting and aggregators
 6. Community or user-generated sources, clearly labeled
 
+Work the primary-evidence queue before expanding a weak lead into broad web search. A search-engine match must not outrank an unresolved original artifact that could directly answer or falsify the question.
+
 Pivot only on corroborated identifiers. Keep a pivot log so aliases, dates, domains, hashes, and locations do not become mixed across entities.
 
 When a public-source collection route hits a CAPTCHA, classify it as an access barrier. Try lawful alternate public routes first. If the site presents ordinary human verification, pause for an operator checkpoint and resume only after the operator completes the challenge manually. Do not automate CAPTCHA solving or transfer verification/session material between environments.
@@ -117,9 +129,41 @@ Check:
 - Source-lineage independence: copied pages and reposted images count as one source
 - For exact geolocation, camera/object/road geometry and a deliberate near-match rejection
 
-Use `references/evidence-confidence.md` for the scoring rubric.
+For every leading hypothesis, explicitly ask:
+- What is the strongest evidence **against** it?
+- What unprocessed first-party evidence could overturn it?
+- Is the apparent corroboration genuinely independent, or is it one clue echoed through search results?
+- What is the cheapest next test that could falsify it?
 
-### 6. Preserve evidence
+Use `references/evidence-confidence.md` and `references/hypothesis-convergence.md` for the scoring and state-transition rules.
+
+### 6. Convergence gate and retry loop
+
+Do not produce a submission-safe final answer until all of the following are true:
+
+- [ ] The exact question and required output format are resolved.
+- [ ] Material first-party artifacts and explicit source-provided hints have been processed, or documented as inaccessible/irrelevant.
+- [ ] Relevant alternate representations or transformations of the original evidence have been tested when signaled by the source or artifact structure.
+- [ ] The leading hypothesis is supported by evidence stronger than search coincidence, thematic similarity, or a single clue lineage.
+- [ ] At least one deliberate falsification attempt has been performed against the leading hypothesis.
+- [ ] Credible contradictions are resolved or clearly bounded.
+- [ ] No unresolved primary evidence could plausibly overturn the final answer.
+- [ ] The answer is backed by the highest-authority source reasonably available.
+
+If the gate fails, continue investigating instead of guessing a precise answer.
+
+If an answer is rejected or a new source contradicts it:
+
+1. Record the rejection/contradiction as evidence.
+2. Revert to the last verified checkpoint.
+3. Mark the affected hypothesis `contradicted` or lower its confidence.
+4. Reopen the primary-evidence queue and unresolved discriminators.
+5. Change one assumption or branch at a time.
+6. Repeat collection → verification → falsification → gate until the evidence state changes.
+
+This is an investigation loop, not a wording-bruteforce loop.
+
+### 7. Preserve evidence
 
 Initialize a ledger:
 
@@ -128,7 +172,7 @@ python scripts/evidence_ledger.py init case/evidence.csv
 python scripts/evidence_ledger.py add case/evidence.csv \
   --claim "Example claim" \
   --source-url "https://example.org/source" \
-  --source-title "Source title" \
+  --source-title "Example source" \
   --source-type primary \
   --confidence medium \
   --notes "What this source supports and what it does not"
@@ -136,7 +180,7 @@ python scripts/evidence_ledger.py add case/evidence.csv \
 
 For local files, record hashes. Do not store unnecessary sensitive data.
 
-### 7. Report
+### 8. Report
 
 Use this structure:
 1. Executive summary
@@ -152,7 +196,9 @@ Use this structure:
 Clearly label:
 - **Verified fact**
 - **Corroborated inference**
+- **Open hypothesis**
 - **Single-source lead**
+- **Contradicted**
 - **Unresolved / unknown**
 
 Use the user's language. Avoid dramatic wording; precision beats certainty theater.
@@ -166,10 +212,10 @@ Return 3–7 tools, grouped by investigation stage. For each: purpose, why it fi
 Return hypotheses, collection stages, source priorities, verification tests, stop conditions, and deliverables. Do not pretend collection has already happened.
 
 ### Full investigation
-Perform the plan, keep an evidence ledger, cite all material claims, and publish a confidence-rated report.
+Perform the plan, keep an evidence ledger and hypothesis ledger, cite all material claims, and publish a confidence-rated report only after the convergence gate passes.
 
 ### Verification / fact-check
-Trace the claim to its earliest available source, validate media provenance, compare independent reporting, identify missing context, and state a verdict with confidence.
+Trace the claim to its earliest available source, validate media provenance, compare independent reporting, identify missing context, attempt falsification, and state a verdict with confidence.
 
 ### Monitoring
 Define entities, keywords, negative keywords, feeds, cadence, alert threshold, deduplication, and escalation criteria. Do not monitor private individuals invasively.
@@ -193,6 +239,7 @@ The source list is licensed CC BY-SA 4.0. Preserve `ATTRIBUTION.md` and `LICENSE
 - Query recipes: `references/query-playbook.md`
 - Safety rules: `references/safety-policy.md`
 - Evidence confidence: `references/evidence-confidence.md`
+- Hypothesis and convergence control: `references/hypothesis-convergence.md`
 - Visual clue taxonomy: `references/visual-clue-taxonomy.md`
 - Image/video workflow: `workflows/image-video-geolocation.md`
 - Visual clue ledger: `templates/visual-clue-inventory.csv`
