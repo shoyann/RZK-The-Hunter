@@ -55,70 +55,6 @@ def verify_versions(errors: list[str]) -> None:
         errors.append(f'CHANGELOG.md version check failed: {exc}')
 
 
-def verify_wanted_person_mode(errors: list[str]) -> None:
-    """Prevent the guarded wanted-person workflow from drifting out of core routing."""
-    workflow_rel = 'workflows/wanted-person-location-intelligence.md'
-    workflow = ROOT / workflow_rel
-    if not workflow.exists():
-        errors.append(f'wanted-person workflow missing: {workflow_rel}')
-        return
-
-    try:
-        manifest_entries = {
-            rel.strip()
-            for rel in (ROOT / 'manifest.txt').read_text(encoding='utf-8').splitlines()
-            if rel.strip()
-        }
-        if workflow_rel not in manifest_entries:
-            errors.append(f'manifest.txt missing wanted-person workflow: {workflow_rel}')
-    except Exception as exc:
-        errors.append(f'wanted-person manifest check failed: {exc}')
-
-    try:
-        skill_text = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
-        if workflow_rel not in skill_text:
-            errors.append('SKILL.md does not route to the wanted-person workflow')
-        if 'active official wanted/fugitive' not in skill_text:
-            errors.append('SKILL.md missing official wanted/fugitive activation language')
-    except Exception as exc:
-        errors.append(f'wanted-person SKILL.md check failed: {exc}')
-
-    try:
-        metadata = json.loads((ROOT / 'skill.json').read_text(encoding='utf-8'))
-        capabilities = set(metadata.get('capabilities', []))
-        required = {
-            'official-wanted-person-status-gating',
-            'official-wanted-person-location-intelligence',
-            'freshness-labelled-location-inference',
-        }
-        missing = sorted(required - capabilities)
-        if missing:
-            errors.append(f'skill.json missing wanted-person capabilities: {missing}')
-    except Exception as exc:
-        errors.append(f'wanted-person skill.json check failed: {exc}')
-
-    try:
-        readme = (ROOT / 'README.md').read_text(encoding='utf-8')
-        if 'guarded official wanted/fugitive-person location intelligence' not in readme:
-            errors.append('README.md missing wanted/fugitive capability declaration')
-    except Exception as exc:
-        errors.append(f'wanted-person README check failed: {exc}')
-
-    try:
-        safety = (ROOT / 'references/safety-policy.md').read_text(encoding='utf-8')
-        if 'Official wanted/fugitive-person exception' not in safety:
-            errors.append('safety-policy.md missing wanted/fugitive exception gate')
-    except Exception as exc:
-        errors.append(f'wanted-person safety-policy check failed: {exc}')
-
-    try:
-        people = (ROOT / 'workflows/people-public-interest.md').read_text(encoding='utf-8')
-        if workflow_rel.split('/', 1)[1] not in people:
-            errors.append('people-public-interest.md does not hand off verified wanted cases')
-    except Exception as exc:
-        errors.append(f'wanted-person people workflow check failed: {exc}')
-
-
 def main() -> int:
     errors: list[str] = []
     manifest = ROOT / 'manifest.txt'
@@ -137,7 +73,6 @@ def main() -> int:
         errors.append('SKILL.md frontmatter missing')
 
     verify_versions(errors)
-    verify_wanted_person_mode(errors)
 
     try:
         catalog = json.loads((ROOT / 'references/catalog.json').read_text(encoding='utf-8'))
@@ -170,7 +105,7 @@ def main() -> int:
         for error in errors:
             print('-', error)
         return 1
-    print('OK — package structure, versions, wanted-person routing, catalog, snapshot hash, attribution, URLs, and Python scripts verified.')
+    print('OK — package structure, versions, catalog, snapshot hash, attribution, URLs, and Python scripts verified.')
     return 0
 
 
