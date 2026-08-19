@@ -45,3 +45,4 @@ workflows/people-public-interest.md
 workflows/quick-triage.md
 workflows/threat-intelligence.md
 workflows/username-social.md
+workflows/wanted-person-location-intelligence.md
