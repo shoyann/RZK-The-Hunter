@@ -1,8 +1,8 @@
 ---
 name: awesome-osint-operator
-description: Ethical, evidence-first OSINT planning, tool selection, verification, monitoring, and reporting using a structured catalog adapted from jivoi/awesome-osint. Use for public-source domain, company, username, image, geospatial, news, fact-checking, and defensive threat-intelligence research. Do not use for doxxing, stalking, credential acquisition, access bypass, real-time tracking, or abusive/invasive profiling.
+description: Ethical, evidence-first OSINT planning, tool selection, verification, monitoring, reporting, and guarded official wanted/fugitive-person location intelligence using a structured catalog adapted from jivoi/awesome-osint. Use for public-source domain, company, username, image, geospatial, news, fact-checking, defensive threat-intelligence, and verified official wanted-person research. Do not use for doxxing, stalking, credential acquisition, access bypass, continuous real-time tracking, or abusive/invasive profiling.
 license: CC-BY-SA-4.0
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Awesome OSINT Operator
@@ -13,9 +13,9 @@ Turn a giant tool list into a disciplined investigation workflow. The catalog is
 
 1. **Scope first.** Record the target, legitimate purpose, jurisdiction, time range, allowed sources, and prohibited actions.
 2. **Use public and lawfully accessible sources only.** Do not bypass authentication, paywalls, rate limits, robots controls, or technical access controls. A CAPTCHA is an access barrier, not an automatic mission stop: do not automate its circumvention. First try lawful public alternatives; when ordinary user verification is available, pause and request a human checkpoint so the operator can complete the challenge manually in the normal browser, then resume. Never extract, export, replay, or transfer CAPTCHA tokens, session cookies, or authentication material.
-3. **Minimize personal data.** Purpose-bound profiling of private individuals is permitted when it is necessary to a legitimate investigation, proportionate to the objective, and limited to public or authorized sources. Avoid unnecessary or invasive profiling, sensitive-trait inference, minors, home addresses, family mapping, real-time location, and unrelated personal details.
+3. **Minimize personal data.** Purpose-bound profiling of private individuals is permitted when it is necessary to a legitimate investigation, proportionate to the objective, and limited to public or authorized sources. Avoid unnecessary or invasive profiling, sensitive-trait inference, minors, home addresses, family mapping, real-time location, and unrelated personal details. A narrower exception exists only for adults who pass the active official wanted/fugitive-person gate in `workflows/wanted-person-location-intelligence.md`.
 4. **Never obtain or expose credentials.** Breach-related tools may be used only for defensive exposure checks on assets the user owns or is authorized to assess. Report exposure status and remediation, never passwords, tokens, raw dumps, or stealer-log contents.
-5. **No doxxing, stalking, harassment, or biometric identification.** Reverse-image provenance and scene verification are acceptable; identifying a private person by face is not.
+5. **No doxxing, stalking, harassment, or biometric identification.** Reverse-image provenance and scene verification are acceptable; identifying a private person by face is not. Bounded public-source location inference is allowed only under the verified official wanted/fugitive-person workflow and never extends to continuous live surveillance.
 6. **Threat intelligence stays defensive.** Prefer hashes, IOCs, reports, sandbox summaries, and vendor analysis. Do not execute malware or download samples unless the user has explicit authorization and a dedicated safe environment.
 7. **Verify freshness.** Tools and facts change. Check current availability, terms, and dates before relying on a catalog entry.
 8. **Cite every material claim.** Preserve source URL, title, publisher, publication date, access time, and a short supporting excerpt or note.
@@ -25,8 +25,9 @@ Turn a giant tool list into a disciplined investigation workflow. The catalog is
 12. **Do not finalize while material first-party evidence remains unprocessed.** Original files, explicit source hints, embedded resources, metadata, source code, alternate views, and relevant low-risk transformations must be resolved or deliberately ruled out before a lead becomes submission-safe.
 13. **A rejected answer is evidence.** Do not keep mutating wording around the same unsupported hypothesis. Roll back to the last verified checkpoint, mark the failed hypothesis, reopen unresolved evidence, change one assumption at a time, and continue the loop.
 
-Read `references/safety-policy.md` before any people, username, email, phone, breach, dark-web, or threat-actor task.
+Read `references/safety-policy.md` before any people, username, email, phone, breach, dark-web, threat-actor, or official wanted/fugitive task.
 Read `references/hypothesis-convergence.md` before any multi-stage investigation, puzzle-like artifact chain, or task where a plausible early answer could be overturned by later evidence.
+For an adult who is currently named in an active official wanted/fugitive notice, verify that status and identity first, then read `workflows/wanted-person-location-intelligence.md` before performing any person-location inference.
 
 ## Default workflow
 
@@ -42,10 +43,10 @@ Capture:
 
 Classify the request:
 - **Low risk:** company, domain ownership, public filings, official statements, news verification, image provenance, public infrastructure, academic research.
-- **Guarded:** usernames, public-person research, purpose-bound private-person profiling, email/phone exposure checks, breach status, social graphing, threat actors, dark-web references.
-- **Disallowed:** credentials, doxxing, stalking, covert tracking, private-account access, deanonymization for harassment, abusive or invasive dossier building, targeted surveillance of vulnerable people, or illegal access.
+- **Guarded:** usernames, public-person research, purpose-bound private-person profiling, email/phone exposure checks, breach status, social graphing, threat actors, dark-web references, and verified official wanted/fugitive-person location intelligence.
+- **Disallowed:** credentials, doxxing, stalking, covert tracking outside the official wanted-person exception, private-account access, deanonymization for harassment, abusive or invasive dossier building, targeted surveillance of vulnerable people, continuous live person tracking, or illegal access.
 
-For guarded work, narrow scope, prefer first-party or official sources, and redact unnecessary PII.
+For guarded work, narrow scope, prefer first-party or official sources, and redact unnecessary PII. For wanted/fugitive cases, do not infer location until the dedicated activation gate has passed.
 
 ### 2. Build a collection plan
 
@@ -54,11 +55,14 @@ Choose the matching workflow:
 - `workflows/company-org.md`
 - `workflows/username-social.md`
 - `workflows/people-public-interest.md`
+- `workflows/wanted-person-location-intelligence.md`
 - `workflows/email-phone-defensive.md`
 - `workflows/image-video-geolocation.md`
 - `workflows/news-fact-check.md`
 - `workflows/threat-intelligence.md`
 - `workflows/monitoring.md`
+
+Route directly to `workflows/wanted-person-location-intelligence.md` only when all activation conditions are satisfied: active official wanted/fugitive status, strong identity match, adult target, lawful public-safety purpose, and public/lawfully supplied evidence. Otherwise remain in `workflows/people-public-interest.md` and do not infer current location.
 
 Start from hypotheses and questions, not tools. Define what evidence would confirm or falsify each hypothesis.
 
@@ -111,6 +115,8 @@ Pivot only on corroborated identifiers. Keep a pivot log so aliases, dates, doma
 
 When a public-source collection route hits a CAPTCHA, classify it as an access barrier. Try lawful alternate public routes first. If the site presents ordinary human verification, pause for an operator checkpoint and resume only after the operator completes the challenge manually. Do not automate CAPTCHA solving or transfer verification/session material between environments.
 
+For official wanted/fugitive-person cases, build a location timeline that separates source time, content time, inferred place, and freshness. Do not turn a historical or reposted clue into a current-location claim.
+
 ### 5. Verify and triangulate
 
 A high-confidence claim usually requires either:
@@ -128,6 +134,7 @@ Check:
 - Alternative explanations and contradictory evidence
 - Source-lineage independence: copied pages and reposted images count as one source
 - For exact geolocation, camera/object/road geometry and a deliberate near-match rejection
+- For official wanted/fugitive-person cases, current notice status and whether the location evidence is historical, last-known, recent-lead, or unresolved
 
 For every leading hypothesis, explicitly ask:
 - What is the strongest evidence **against** it?
@@ -149,6 +156,8 @@ Do not produce a submission-safe final answer until all of the following are tru
 - [ ] Credible contradictions are resolved or clearly bounded.
 - [ ] No unresolved primary evidence could plausibly overturn the final answer.
 - [ ] The answer is backed by the highest-authority source reasonably available.
+
+For official wanted/fugitive-person location findings, also require the dedicated workflow's official-status recheck, freshness label, confidence, and strongest contradiction/falsification attempt before finalizing.
 
 If the gate fails, continue investigating instead of guessing a precise answer.
 
@@ -201,6 +210,8 @@ Clearly label:
 - **Contradicted**
 - **Unresolved / unknown**
 
+For official wanted/fugitive-person cases, use the required output fields in `workflows/wanted-person-location-intelligence.md`, including notice source, status-check time, location finding, evidence timestamps, freshness, confidence, supporting sources, strongest contradiction, and handling note.
+
 Use the user's language. Avoid dramatic wording; precision beats certainty theater.
 
 ## Operating modes
@@ -217,8 +228,11 @@ Perform the plan, keep an evidence ledger and hypothesis ledger, cite all materi
 ### Verification / fact-check
 Trace the claim to its earliest available source, validate media provenance, compare independent reporting, identify missing context, attempt falsification, and state a verdict with confidence.
 
+### Official wanted/fugitive location intelligence
+Activate only for an adult with a current official wanted/fugitive notice and a strong identity match. Use public or lawfully supplied evidence to infer a bounded last-known or recently evidenced location, attach freshness and confidence, recheck official status before finalizing, and stop immediately if the notice is no longer active or only prohibited collection routes remain. Never convert this mode into continuous live surveillance or tactical apprehension guidance.
+
 ### Monitoring
-Define entities, keywords, negative keywords, feeds, cadence, alert threshold, deduplication, and escalation criteria. Do not monitor private individuals invasively.
+Define entities, keywords, negative keywords, feeds, cadence, alert threshold, deduplication, and escalation criteria. Do not monitor private individuals invasively. The official wanted/fugitive workflow does not authorize continuous minute-by-minute monitoring.
 
 ## Catalog maintenance
 
@@ -242,6 +256,7 @@ The source list is licensed CC BY-SA 4.0. Preserve `ATTRIBUTION.md` and `LICENSE
 - Hypothesis and convergence control: `references/hypothesis-convergence.md`
 - Visual clue taxonomy: `references/visual-clue-taxonomy.md`
 - Image/video workflow: `workflows/image-video-geolocation.md`
+- Official wanted/fugitive workflow: `workflows/wanted-person-location-intelligence.md`
 - Visual clue ledger: `templates/visual-clue-inventory.csv`
 - Candidate scoring matrix: `templates/location-candidate-matrix.csv`
 - Image geolocation report: `templates/image-geolocation-report.md`

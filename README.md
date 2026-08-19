@@ -5,7 +5,7 @@
 > **ROZOOKA INDUSTRIES**<br>
 > Intelligence Systems Division<br>
 > Package designation: `awesome-osint-operator`<br>
-> Release: `v1.1.1`<br>
+> Release: `v1.3.0`<br>
 > Handling: Public-source intelligence only
 
 The Hunter is a field-ready OSINT operating system for turning open web research into traceable, defensible intelligence.
@@ -23,6 +23,7 @@ It covers:
 - username and social-account research
 - public-interest people research
 - purpose-bound private-person profiling from public or authorized sources
+- guarded official wanted/fugitive-person location intelligence from public evidence
 - defensive email and phone exposure checks
 - image and video provenance
 - geolocation and scene verification
@@ -40,12 +41,22 @@ The Hunter follows these rules:
 2. Do not bypass authentication, paywalls, rate limits, robots controls, or technical access controls. A CAPTCHA is not an automatic mission failure: try lawful public alternatives first, or pause for a human checkpoint so the operator can complete ordinary verification manually.
 3. Collect the minimum personal data necessary for the stated purpose. Bounded private-person profiling is allowed when it is necessary, proportionate, and tied to a legitimate investigation objective.
 4. Never obtain, expose, or redistribute credentials, tokens, private keys, raw breach data, or stealer-log contents.
-5. Do not support doxxing, stalking, harassment, covert tracking, abusive or invasive dossier building, or biometric identification of private people.
+5. Do not support doxxing, stalking, harassment, covert tracking, abusive or invasive dossier building, or biometric identification of private people. The only person-location exception is the guarded official wanted/fugitive workflow, which is limited to bounded inference from public evidence and does not permit continuous live surveillance.
 6. Keep threat intelligence defensive: work with hashes, IOCs, reports, sandbox summaries, and vendor analysis.
 7. Verify freshness, provenance, identity, timestamps, source independence, and contradictory evidence.
 8. For exact geolocation, require clue diversity, geometric verification, and deliberate rejection of near-matches.
 
-Read [`references/safety-policy.md`](references/safety-policy.md) before any guarded investigation involving people, usernames, email, phone, breach exposure, dark-web references, or threat actors.
+Read [`references/safety-policy.md`](references/safety-policy.md) before any guarded investigation involving people, usernames, email, phone, breach exposure, dark-web references, threat actors, or official wanted/fugitive cases.
+
+### Official wanted/fugitive mode
+
+The Hunter includes a dedicated public-safety workflow for **adults who are currently named in an active official wanted/fugitive notice** issued by a recognized government, court, prosecutor, police service, INTERPOL, Europol, or equivalent authority.
+
+Before the mode activates, the agent must verify the official notice, lock the target identity, confirm adult status and lawful purpose, and keep collection inside public, lawfully accessible, or operator-supplied evidence.
+
+Once those gates pass, the workflow may geolocate public media, correlate public timestamps and scene clues, build a location timeline, and report a last-known or recently evidenced location. Exact places or coordinates are allowed only when the evidence supports them and must carry freshness, confidence, contradictions, and an official-status recheck.
+
+This mode does **not** authorize private-account access, credential or breach-data use, device/carrier/brokered telemetry, deception, third-party contact, continuous minute-by-minute surveillance, or tactical apprehension guidance. See [`workflows/wanted-person-location-intelligence.md`](workflows/wanted-person-location-intelligence.md).
 
 ### CAPTCHA and human checkpoints
 
@@ -161,7 +172,7 @@ Label conclusions precisely:
 | [`SKILL.md`](SKILL.md) | Core operating doctrine and execution rules |
 | `references/catalog.json` / `catalog.csv` | Structured tool catalog |
 | `references/` | Safety policy, confidence rubric, taxonomy, query playbook, and source snapshot |
-| `workflows/` | Mission-specific operating procedures |
+| `workflows/` | Mission-specific operating procedures, including the guarded official wanted/fugitive workflow |
 | `templates/` | Investigation plans, evidence ledgers, clue inventories, matrices, and report formats |
 | `scripts/` | Catalog search, workflow selection, evidence tracking, visual cases, synchronization, and verification |
 | `tests/` | Package integrity and catalog tests |
