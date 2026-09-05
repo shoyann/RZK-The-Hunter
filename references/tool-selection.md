@@ -2,6 +2,11 @@
 
 The catalog is large by design. Use this matrix to choose a small, diverse set.
 
+First select an evidence-changing action using
+[adaptive investigation strategy](adaptive-investigation-strategy.md).
+The matrix and script bundles are implementation suggestions, not a fixed
+sequence. A cheap pending falsifier may outrank an entire workflow bundle.
+
 | Objective | Start with | Add for verification | Avoid as primary evidence |
 |---|---|---|---|
 | Domain / infrastructure | RDAP/WHOIS, DNS, certificate transparency | ASN/BGP, archives, technology fingerprint, reputation | Anonymous scanners, stale scraped summaries |

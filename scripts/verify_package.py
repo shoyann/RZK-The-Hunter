@@ -32,7 +32,8 @@ def verify_versions(errors: list[str]) -> None:
 
     try:
         skill_text = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
-        match = re.search(r'(?m)^version:\s*([^\s]+)\s*$', skill_text)
+        frontmatter = skill_text.split('---', 2)[1]
+        match = re.search(r'(?m)^metadata:\n  version:\s*([^\s]+)\s*$', frontmatter)
         skill_version = match.group(1) if match else None
         if skill_version != version:
             errors.append(f'SKILL.md version mismatch: {skill_version!r} != {version!r}')
@@ -119,6 +120,30 @@ def verify_wanted_person_mode(errors: list[str]) -> None:
         errors.append(f'wanted-person people workflow check failed: {exc}')
 
 
+def verify_strategy_package(errors: list[str]) -> None:
+    """Ensure a released skill can reach every resource added for AIS."""
+    required = {
+        'references/adaptive-investigation-strategy.md',
+        'references/trajectory-evaluation.md',
+        'templates/strategy-checkpoint.md',
+        'scripts/trajectory_eval.py',
+        'tests/test_trajectory_eval.py',
+        'tests/test_strategy_package.py',
+        'tests/fixtures/behavioral-cases.json',
+    }
+    try:
+        entries = set((ROOT / 'manifest.txt').read_text(encoding='utf-8').splitlines())
+        for rel in sorted(required):
+            if rel not in entries or not (ROOT / rel).is_file():
+                errors.append(f'AIS resource missing from package: {rel}')
+        skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
+        route = 'references/adaptive-investigation-strategy.md'
+        if route not in skill:
+            errors.append('SKILL.md missing AIS route')
+    except Exception as exc:
+        errors.append(f'AIS package check failed: {exc}')
+
+
 def main() -> int:
     errors: list[str] = []
     manifest = ROOT / 'manifest.txt'
@@ -138,6 +163,7 @@ def main() -> int:
 
     verify_versions(errors)
     verify_wanted_person_mode(errors)
+    verify_strategy_package(errors)
 
     try:
         catalog = json.loads((ROOT / 'references/catalog.json').read_text(encoding='utf-8'))
@@ -170,7 +196,7 @@ def main() -> int:
         for error in errors:
             print('-', error)
         return 1
-    print('OK — package structure, versions, wanted-person routing, catalog, snapshot hash, attribution, URLs, and Python scripts verified.')
+    print('OK — package structure, versions, wanted-person/AIS routing, catalog, snapshot hash, attribution, URLs, and Python scripts verified.')
     return 0
 
 

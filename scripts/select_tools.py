@@ -98,7 +98,9 @@ RISK_ORDER = {'low': 0, 'guarded': 1, 'restricted': 2}
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description='Select a small tool bundle for an OSINT workflow.')
+    ap = argparse.ArgumentParser(
+        description='Select implementation tools after choosing an evidence-changing action.',
+        epilog='Workflow bundles are suggestions, not action order. See references/adaptive-investigation-strategy.md.')
     ap.add_argument('--workflow', required=True, choices=sorted(PROFILES))
     ap.add_argument('--per-stage', type=int, default=2)
     ap.add_argument('--catalog', default=str(Path(__file__).resolve().parents[1] / 'references' / 'catalog.json'))

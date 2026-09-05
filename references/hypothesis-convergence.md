@@ -112,6 +112,13 @@ Each candidate explanation should have an explicit record:
 
 A hypothesis cannot be `verified` merely because search results produce many matching details.
 
+Before expanding a leading branch, turn its fastest falsifier into a concrete
+candidate action and execute it or document why it is deferred. Record result
+and belief change separately; an inaccessible or inconclusive check is not
+disproof. Use [adaptive strategy](adaptive-investigation-strategy.md) to compare
+actions. The states above describe evidence readiness, not a mandatory linear
+search order; strategy can move among methods while the answer gate stays closed.
+
 ## Search-coincidence hazard
 
 Treat a candidate as vulnerable to coincidence when any of these are true:

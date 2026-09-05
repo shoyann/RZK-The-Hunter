@@ -2,6 +2,12 @@
 
 Use search operators to reduce noise, not to hunt exposed secrets.
 
+At a stall, group attempts by objective, representation, habitat and underlying
+source lineage. Rewording with unchanged results is not evidence progress.
+Consider [representation/habitat pivots or method search](adaptive-investigation-strategy.md)
+before another equivalent query. A discovered method is a capability lead, not
+evidence or authorization to install tools, upload artifacts or bypass access.
+
 ## Core operators
 
 - Exact phrase: `"project name"`

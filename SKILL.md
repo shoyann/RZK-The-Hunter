@@ -2,7 +2,8 @@
 name: awesome-osint-operator
 description: Ethical, evidence-first OSINT planning, tool selection, verification, monitoring, reporting, and guarded official wanted/fugitive-person location intelligence using a structured catalog adapted from jivoi/awesome-osint. Use for public-source domain, company, username, image, geospatial, news, fact-checking, defensive threat-intelligence, and verified official wanted-person research. Do not use for doxxing, stalking, credential acquisition, access bypass, continuous real-time tracking, or abusive/invasive profiling.
 license: CC-BY-SA-4.0
-version: 1.3.0
+metadata:
+  version: 1.4.0
 ---
 
 # Awesome OSINT Operator
@@ -27,6 +28,7 @@ Turn a giant tool list into a disciplined investigation workflow. The catalog is
 
 Read `references/safety-policy.md` before any people, username, email, phone, breach, dark-web, threat-actor, or official wanted/fugitive task.
 Read `references/hypothesis-convergence.md` before any multi-stage investigation, puzzle-like artifact chain, or task where a plausible early answer could be overturned by later evidence.
+At a consequential branch decision or strategic stall, read `references/adaptive-investigation-strategy.md`. Use it to choose the next evidence-changing action; it adds no collection permissions and does not replace the convergence gate.
 For an adult who is currently named in an active official wanted/fugitive notice, verify that status and identity first, then read `workflows/wanted-person-location-intelligence.md` before performing any person-location inference.
 
 ## Default workflow
@@ -75,7 +77,26 @@ For image/video tasks, first read `references/visual-clue-taxonomy.md` and creat
 
 For structured visual carriers such as QR codes, barcodes, steganographic layouts, or deliberately transformed puzzle artifacts, preserve every reproducible decode separately and test source-signaled transformations such as rotation, mirror, inversion, threshold/channel changes, or alternate layers before treating one valid payload as exhaustive.
 
-### 3. Select tools from the catalog
+### 3. Choose the next action, then its tools
+
+Compare a small set of feasible actions against the current evidence gap. Convert
+the leading hypothesis's **fastest falsifier** into an executable source/artifact
+check before deepening that branch; execute it or explain why a different action
+has greater expected value. Rank qualitatively by discrimination, source fit,
+cost, repetition and fidelity after applying scope/access/safety constraints.
+
+Log the expected discriminator, actual result and resulting evidence change.
+When rephrased queries return the same source lineages without narrowing the
+question, consider an original artifact, representation/habitat pivot, documented
+technique transfer, method search, or deterministic/manual fallback. Changing a
+query or website alone is not progress. No fixed action count or tool order is
+required. Use `templates/strategy-checkpoint.md` only when it helps a branch decision.
+
+For historical questions, current representations are discovery leads until the
+required time is verified. Park unexplained clues with revisit triggers. Task
+wording, AI output and generatively reconstructed detail are not factual evidence.
+
+The catalog helps implement the selected action; its rankings are not a case plan.
 
 Search locally:
 
@@ -254,6 +275,9 @@ The source list is licensed CC BY-SA 4.0. Preserve `ATTRIBUTION.md` and `LICENSE
 - Safety rules: `references/safety-policy.md`
 - Evidence confidence: `references/evidence-confidence.md`
 - Hypothesis and convergence control: `references/hypothesis-convergence.md`
+- Adaptive next-action strategy: `references/adaptive-investigation-strategy.md`
+- Strategy checkpoint and deferred clues: `templates/strategy-checkpoint.md`
+- Optional trace audit / evaluation limits: `references/trajectory-evaluation.md`
 - Visual clue taxonomy: `references/visual-clue-taxonomy.md`
 - Image/video workflow: `workflows/image-video-geolocation.md`
 - Official wanted/fugitive workflow: `workflows/wanted-person-location-intelligence.md`

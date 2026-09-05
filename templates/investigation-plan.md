@@ -28,6 +28,11 @@
 
 ## Verification plan
 
+- Cheapest pending falsifier and executable next action:
+- Expected discriminator / evidence change:
+- If stalled: different representation, source habitat or method to test:
+- Link to a strategy checkpoint when needed: `templates/strategy-checkpoint.md`
+
 ## Evidence handling
 
 ## Deliverables

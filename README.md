@@ -5,7 +5,7 @@
 > **ROZOOKA INDUSTRIES**<br>
 > Intelligence Systems Division<br>
 > Package designation: `awesome-osint-operator`<br>
-> Release: `v1.3.0`<br>
+> Release: `v1.4.0`<br>
 > Handling: Public-source intelligence only
 
 The Hunter is a field-ready OSINT operating system for turning open web research into traceable, defensible intelligence.
@@ -86,7 +86,30 @@ The Hunter should not drift from a bounded investigation into an invasive life d
 
 ## Deployment
 
+### v1.4 — Adaptive Investigation Strategy
+
+The Hunter now asks **which feasible action could change the evidence state most
+cheaply**, before choosing a tool. It connects pending falsifiers to actual
+actions, suggests representation/source-habitat pivots when search repeats,
+keeps historical and current evidence separate, and parks unexplained clues
+without forcing them into an answer. Safety and convergence gates are unchanged.
+
+- [Strategy doctrine](references/adaptive-investigation-strategy.md)
+- [Compact branch checkpoint](templates/strategy-checkpoint.md)
+- [Read-only trajectory audit and evaluation protocol](references/trajectory-evaluation.md)
+
+The auditor flags patterns in recorded, annotated actions. It does not browse,
+rank people, verify source truth or approve a final answer. Synthetic trace tests
+are regression infrastructure, **not measured proof of improved model solve rate**.
+No automatic memory retriever or numeric action scheduler is shipped in v1.4.
+
+### Install the complete package
+
 Place the package in your agent's skills directory, or point the agent directly at `SKILL.md`.
+
+Use the release archive or a full checkout: copying only `SKILL.md` (or leaving a
+sparse checkout) omits required references and scripts. After an update, verify
+the installed copy with `python scripts/verify_package.py`.
 
 ```text
 awesome-osint-operator/
@@ -138,6 +161,14 @@ python scripts/visual_case.py score case/image-001/location-candidates.csv
 
 ### Maintain and verify the package
 
+Optionally audit a recorded case using the documented trace schema:
+
+```bash
+python scripts/trajectory_eval.py case/trajectory.json
+```
+
+An audit is advisory; see the evaluation protocol before interpreting metrics.
+
 ```bash
 python scripts/sync_catalog.py
 python scripts/verify_package.py
@@ -175,7 +206,7 @@ Label conclusions precisely:
 | `workflows/` | Mission-specific operating procedures, including the guarded official wanted/fugitive workflow |
 | `templates/` | Investigation plans, evidence ledgers, clue inventories, matrices, and report formats |
 | `scripts/` | Catalog search, workflow selection, evidence tracking, visual cases, synchronization, and verification |
-| `tests/` | Package integrity and catalog tests |
+| `tests/` | Package/catalog tests, synthetic trace regressions, and raw behavioral evaluation packets |
 
 ## Provenance
 

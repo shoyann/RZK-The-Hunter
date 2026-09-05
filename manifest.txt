@@ -10,6 +10,7 @@ examples/misinformation-verification.md
 examples/multi-signal-image-geolocation.md
 manifest.txt
 references/catalog.csv
+references/adaptive-investigation-strategy.md
 references/catalog.json
 references/evidence-confidence.md
 references/hypothesis-convergence.md
@@ -18,12 +19,14 @@ references/safety-policy.md
 references/source/awesome-osint-README.md
 references/taxonomy.md
 references/tool-selection.md
+references/trajectory-evaluation.md
 references/visual-clue-taxonomy.md
 scripts/cataloglib.py
 scripts/evidence_ledger.py
 scripts/search_catalog.py
 scripts/select_tools.py
 scripts/sync_catalog.py
+scripts/trajectory_eval.py
 scripts/verify_package.py
 scripts/visual_case.py
 skill.json
@@ -34,8 +37,12 @@ templates/image-geolocation-report.md
 templates/investigation-plan.md
 templates/location-candidate-matrix.csv
 templates/source-evaluation.md
+templates/strategy-checkpoint.md
 templates/visual-clue-inventory.csv
 tests/test_catalog.py
+tests/test_trajectory_eval.py
+tests/test_strategy_package.py
+tests/fixtures/behavioral-cases.json
 workflows/company-org.md
 workflows/domain-infrastructure.md
 workflows/email-phone-defensive.md

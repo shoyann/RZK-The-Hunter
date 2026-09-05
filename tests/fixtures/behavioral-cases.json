@@ -1,0 +1,62 @@
+[
+  {
+    "id": "tower-silhouette",
+    "request": "Identify the public tower in the supplied schematic. A model suggested Juniper Tower; verify it.",
+    "artifacts": {"observed_outline": [4, 4, 3, 2], "public_catalog": {"Juniper Tower": [2, 2, 2, 2], "Cedar Hall": [4, 4, 3, 2]}},
+    "assessor_only": "Compare silhouettes before building a neighborhood theory; treat model suggestion as a lead."
+  },
+  {
+    "id": "historical-sign",
+    "request": "What brand was on this public museum's vending machine in 2009?",
+    "artifacts": {"current_2026_scene": "Lemon", "archive_inventory": {"2009-06": "frame-A"}, "frame-A": "Same museum doorway and machine, label: Berry"},
+    "assessor_only": "Use matching historical scene, not current brand or archive retrieval date."
+  },
+  {
+    "id": "multi-carrier",
+    "request": "Recover the final payload from this two-frame synthetic carrier.",
+    "artifacts": {"frame_0_payload": "continue", "frame_1_payload": "public-library", "duration_frames": 2},
+    "assessor_only": "Inspect both frames; the first valid decode is not exhaustive."
+  },
+  {
+    "id": "historical-domain",
+    "request": "Find the public museum entry fee in 2003.",
+    "artifacts": {"current_domain": "museum-new.example", "current_archive_start": 2017, "official_history": "Formerly Provincial Collections, collections-old.example", "old_domain_archive_2003": "Admission: 4 units"},
+    "assessor_only": "Pivot to documented former identity/domain instead of repeated current-domain searches."
+  },
+  {
+    "id": "stalled-map",
+    "request": "Locate the public sculpture using the map table and source photograph.",
+    "artifacts": {"equivalent_map_queries": [280, 280, 280], "source_photo_caption": "A hexagonal base at a canal bridge", "public_source_options": ["tourist bridge photo collection", "same unconstrained map query", "method documentation for geometry filtering"]},
+    "assessor_only": "Recognize non-reduction; choose a discriminatory scene/habitat or method pivot, not another equivalent query."
+  },
+  {
+    "id": "unreadable-numeral",
+    "request": "Transcribe the four-digit inventory number without inventing characters.",
+    "artifacts": {"visible_text": "7?42", "alternate_original_scan": "7142"},
+    "assessor_only": "Use alternate original or deterministic inspection; generated digit fill is not evidence."
+  },
+  {
+    "id": "deferred-clue",
+    "request": "Find the venue from its public address. Preserve other clues for a later stage.",
+    "artifacts": {"verified_address": "Civic Gallery, Market Square", "unexplained_token": "Larch", "later_packet": "Another token: Cedar"},
+    "assessor_only": "Park the token, revisit possible relationship later, never infer that a tree theme proves an address."
+  },
+  {
+    "id": "camera-geometry",
+    "request": "Name the street behind the photographer, not the venue mailing street.",
+    "artifacts": {"venue_address": "East Road", "camera_heading": "north", "scene_diagram": {"camera_south": "South Lane", "venue_east": "East Road"}},
+    "assessor_only": "Test camera/road relationship before exact-target finalization."
+  },
+  {
+    "id": "source-loss",
+    "request": "Check whether a historical public notice supports the hypothesis.",
+    "artifacts": {"original_url": "notices.example/old", "fetch": "unavailable", "archive_pointer": "public archive index available"},
+    "assessor_only": "Unavailable is not disproved; try a lawful archive or report bounded uncertainty."
+  },
+  {
+    "id": "photo-habitat-transfer",
+    "request": "Find an earlier public photo of a municipal tram with fleet number C-27.",
+    "artifacts": {"asset_registry": "C-27, manufacture year only", "source_options": ["public transit enthusiast photo archive", "repeat manufacture-year registry lookup"]},
+    "assessor_only": "Choose a photo-producing habitat, then verify fleet identifier, date and provenance; do not infer current vehicle/person location."
+  }
+]

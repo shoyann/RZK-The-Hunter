@@ -4,6 +4,14 @@ The objective is not to find one plausible clue. It is to build a **multi-signal
 
 A search result is a lead. A visually similar object is a lead. An address near the object is a lead. None of these alone establishes the requested street, building, date, or camera position.
 
+At a branch decision use [adaptive strategy](../references/adaptive-investigation-strategy.md):
+test the cheapest silhouette/exact-object contradiction before constructing
+dependent neighborhood theories. For a dated scene, verify that the chosen
+representation covers the required period; current signage is only a lead.
+If recognition fails, classify the failure and try an appropriate non-generative
+representation or original copy. Generated pixels never resolve an exact digit.
+The stages below organize evidence coverage, not an inflexible execution order.
+
 ## Default evidence contract
 
 Unless one authoritative primary source resolves the exact question directly, do not submit a precise location from a single clue or a single source lineage.

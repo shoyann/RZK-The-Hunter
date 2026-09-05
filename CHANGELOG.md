@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 1.4.0
+
+- Added Adaptive Investigation Strategy: choose a discriminatory action before its tool; execute or explicitly defer the fastest falsifier before expanding an unverified branch
+- Added qualitative representation/habitat pivots, time-indexed evidence handling, source-lifetime awareness, AI fidelity guidance and deterministic/manual fallbacks
+- Added a compact strategy checkpoint for query-family evolution, deferred clues and documented technique transfer without an automatic memory database
+- Added a read-only trajectory auditor with evidenced-progress validation, advisory stalls, source-cluster repetition, hypothesis/contradiction latency and finalization warnings
+- Added synthetic positive/negative trace regressions plus ten perturbed raw task packets for future matched model evaluations
+- Documented v1.3 baseline integrity results, minimal architecture, ablation protocol and explicit limits: no measured end-to-end solve-rate improvement is claimed
+- Integrated strategy into existing hypothesis, visual, query and tool-selection routes; preserved safety, wanted-person gates and convergence requirements
+- Kept the catalog snapshot unchanged and synchronized version markers and release manifest
+- Moved the skill version into supported `metadata.version` frontmatter and added AIS package-completeness checks
+
 ## 1.3.0
 
 - Promoted the guarded `wanted-person-location-intelligence` workflow into the released package for adults covered by an active official wanted/fugitive notice
