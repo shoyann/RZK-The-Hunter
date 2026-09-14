@@ -12,6 +12,12 @@ The Hunter is a field-ready OSINT operating system for turning open web research
 
 This is not a link dump. It is a disciplined workflow for scoping a mission, selecting the right tools, preserving evidence, testing competing hypotheses, and reporting only what the record can support.
 
+## Low-Steering Field Evaluation
+
+The Hunter has been used in near-black-box OSINT challenge runs: the original task was handed directly to the host AI, with operator input typically limited to the task itself and occasional `retry`.
+
+This setup reached **Global #4 on OSINT UK** and **Global #8 on OSINT Industries** within 48 hours. These are field results of `host model + The Hunter + available tools`, not a controlled benchmark.
+
 ## Mission Profile
 
 The package is built for researchers, investigators, analysts, journalists, and security teams working with lawful public sources.
