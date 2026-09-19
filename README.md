@@ -7,10 +7,10 @@
 **A parasitic investigation skill for AI agents.**  
 Adaptive research · verified sources · traceable evidence
 
-![Release](https://img.shields.io/badge/release-v1.4.0-171717?style=flat-square)
-![Discipline](https://img.shields.io/badge/discipline-OSINT-171717?style=flat-square)
-![Handling](https://img.shields.io/badge/handling-public_sources_only-171717?style=flat-square)
-![Runtime](https://img.shields.io/badge/runtime-agent_native-171717?style=flat-square)
+![Release](https://img.shields.io/badge/release-v1.4.0-A23B46?style=flat-square&labelColor=2B2F33)
+![Discipline](https://img.shields.io/badge/discipline-OSINT-2F6F7E?style=flat-square&labelColor=2B2F33)
+![Handling](https://img.shields.io/badge/handling-public_sources_only-A4772B?style=flat-square&labelColor=2B2F33)
+![Runtime](https://img.shields.io/badge/runtime-agent_native-5D7048?style=flat-square&labelColor=2B2F33)
 
 [Overview](#overview) · [Field results](#field-results) · [Quick start](#quick-start) · [Field kit](#field-kit) · [Doctrine](#operating-doctrine) · [Package map](#package-map)
 
