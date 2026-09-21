@@ -45,6 +45,7 @@ def validate_trace(trace):
     if not isinstance(trace["actions"], list):
         raise ValueError("actions must be a list")
     seen = set()
+    finalized = False
     for index, row in enumerate(trace["actions"], start=1):
         label = f"action {index}"
         if not isinstance(row, dict):
@@ -62,6 +63,10 @@ def validate_trace(trace):
                 raise ValueError(f"{label}.{field} cannot be empty")
         if row["kind"] not in KINDS:
             raise ValueError(f"{label} unknown action kind")
+        if finalized:
+            raise ValueError(f"{label} cannot follow a finalize action")
+        if row["kind"] == "finalize":
+            finalized = True
         if row["kind"] == "search" and not row["query_family"].strip():
             raise ValueError(f"{label} search requires query_family")
         if row["id"] in seen:
