@@ -21,7 +21,7 @@ Adaptive research · verified sources · traceable evidence
 
 | Designation | Release | Division | Handling |
 | --- | --- | --- | --- |
-| `awesome-osint-operator` | `v1.4.0` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
+| `awesome-osint-operator` | Release: `v1.4.0` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
 
 ## Overview
 
@@ -57,7 +57,7 @@ The Hunter has been used in near-black-box OSINT challenge runs: the original ta
 | Visual evidence | Image/video provenance, geolocation, scene comparison, and timestamp verification |
 | Claims and events | News verification, source triangulation, timelines, and contradiction tracking |
 | Defensive intelligence | Email/phone exposure checks, IOCs, threat reports, and monitoring plans |
-| Guarded public safety | Official wanted/fugitive location intelligence from bounded public evidence |
+| Guarded public safety | Supports guarded official wanted/fugitive-person location intelligence from bounded public evidence |
 
 ## Quick start
 
