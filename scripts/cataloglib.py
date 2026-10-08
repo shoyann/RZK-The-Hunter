@@ -189,5 +189,6 @@ def score_tool(tool: dict, query: str) -> float:
     phrase = normalize(query)
     if phrase and phrase in fields['name']: score += 12
     if phrase and phrase in fields['description']: score += 5
-    if tool.get('risk_tier') == 'low': score += 0.4
+    # Risk preference ranks relevant matches; it must not create a match.
+    if score > 0 and tool.get('risk_tier') == 'low': score += 0.4
     return score

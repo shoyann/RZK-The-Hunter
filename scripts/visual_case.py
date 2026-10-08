@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import shutil
 import sys
 from collections import defaultdict
@@ -66,9 +67,12 @@ def init_case(case_dir: Path, force: bool = False) -> int:
 
 def parse_float(value: str, field: str, row_number: int) -> float:
     try:
-        return float(value)
+        parsed = float(value)
     except (TypeError, ValueError) as exc:
         raise ValueError(f"row {row_number}: invalid {field}={value!r}") from exc
+    if not math.isfinite(parsed):
+        raise ValueError(f"row {row_number}: {field} must be finite, got {value!r}")
+    return parsed
 
 
 def score_candidates(matrix_path: Path) -> int:
@@ -101,6 +105,8 @@ def score_candidates(matrix_path: Path) -> int:
                 continue
             candidate_name = (row.get("candidate_name") or candidate_id).strip()
             weight = parse_float(row.get("clue_weight", ""), "clue_weight", row_number)
+            if weight < 0:
+                raise ValueError(f"row {row_number}: clue_weight must be non-negative")
             score = parse_float(
                 row.get("match_score_minus2_to_plus2", ""),
                 "match_score_minus2_to_plus2",
@@ -109,7 +115,12 @@ def score_candidates(matrix_path: Path) -> int:
             if score < -2 or score > 2:
                 raise ValueError(f"row {row_number}: match score must be between -2 and +2")
             weighted = weight * score
-            totals[candidate_id] += weighted
+            if not math.isfinite(weighted):
+                raise ValueError(f"row {row_number}: weighted score exceeds the finite numeric range")
+            total = totals[candidate_id] + weighted
+            if not math.isfinite(total):
+                raise ValueError(f"row {row_number}: candidate total exceeds the finite numeric range")
+            totals[candidate_id] = total
             names[candidate_id] = candidate_name
             if score > 0:
                 positive[candidate_id] += 1

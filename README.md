@@ -7,7 +7,7 @@
 **A parasitic investigation skill for AI agents.**  
 Adaptive research · verified sources · traceable evidence
 
-![Release](https://img.shields.io/badge/release-v1.4.0-A23B46?style=flat-square&labelColor=2B2F33)
+![Release](https://img.shields.io/badge/release-v1.4.1-A23B46?style=flat-square&labelColor=2B2F33)
 ![Discipline](https://img.shields.io/badge/discipline-OSINT-2F6F7E?style=flat-square&labelColor=2B2F33)
 ![Handling](https://img.shields.io/badge/handling-public_sources_only-A4772B?style=flat-square&labelColor=2B2F33)
 ![Runtime](https://img.shields.io/badge/runtime-agent_native-5D7048?style=flat-square&labelColor=2B2F33)
@@ -21,7 +21,7 @@ Adaptive research · verified sources · traceable evidence
 
 | Designation | Release | Division | Handling |
 | --- | --- | --- | --- |
-| `awesome-osint-operator` | Release: `v1.4.0` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
+| `awesome-osint-operator` | Release: `v1.4.1` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
 
 ## Overview
 
@@ -83,6 +83,14 @@ python scripts/verify_package.py
 
 The primary operating instructions live in [`SKILL.md`](SKILL.md). The remaining directories provide the catalog, playbooks, evidence tools, templates, and validation suite.
 
+## What's new in v1.4.1
+
+- Catalog searches return no matches when the query is unrelated; low-risk preference only ranks relevant results.
+- Visual scoring rejects non-finite values, negative weights and arithmetic overflow while preserving valid negative evidence scores.
+- Investigations may continue after a conclusion. Further investigation automatically supersedes the earlier conclusion; a new finalization must pass the recorded checks before becoming current. No fixed search order, retry limit or extra reopen action is required.
+
+See [reopening and finalization states](references/trajectory-evaluation.md#reopening-after-a-conclusion) for the advisory audit and strict-mode behavior.
+
 ## What's new in v1.4
 
 ### Adaptive Investigation Strategy
@@ -138,6 +146,8 @@ python scripts/evidence_ledger.py add case/evidence.csv \
 python scripts/visual_case.py init case/image-001
 python scripts/visual_case.py score case/image-001/location-candidates.csv
 ```
+
+Weights must be finite and non-negative; match scores must be finite and between -2 and +2. Negative match scores preserve contrary evidence. Invalid numbers or overflowing totals produce an input error without a ranking.
 
 ### Audit and verify
 

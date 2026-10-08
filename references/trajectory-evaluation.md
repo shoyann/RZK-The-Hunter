@@ -98,6 +98,58 @@ fields, invalid booleans, duplicate IDs and unknown schema versions fail input
 validation. Default exit 0 means the audit ran, not that a case is solved;
 --strict exits 1 for advisory findings; invalid input exits 2.
 
+## Reopening after a conclusion
+
+As of v1.4.1, a `finalize` action records a conclusion at that point in the
+investigation; it does not forbid later work. Any subsequent non-finalize action
+automatically reopens the investigation and supersedes that earlier conclusion.
+This includes new evidence, failed searches and contradiction handling. No special
+`reopen` action, fixed tool order, retry limit or compulsory exploration strategy
+is introduced. Existing schema-version-1 traces remain valid input.
+
+The audit reports a separate `finalization_state`:
+
+| State | Meaning |
+|---|---|
+| `NOT_FINALIZED` | No conclusion has been recorded yet |
+| `FINALIZED` | The latest action is a finalize whose recorded checks pass and whose contradictions have been handled |
+| `REOPENED` | Investigation continued after a finalize attempt and no new finalize has been recorded |
+| `UNSUPPORTED` | The latest action is a finalize with missing/false checks or outstanding contradictions |
+
+`latest_finalization` identifies the most recent finalize attempt.
+`active_finalization` is non-null only in `FINALIZED`; it never falls back to an
+older conclusion when a newer attempt fails. `reopened_at` identifies the first
+action after the latest finalize, and is cleared on a new finalize.
+`metrics.reopened_investigations` counts those reopening transitions, including
+work following an unsupported finalize attempt. Consecutive finalize actions are
+allowed; each is checked independently and the newest replaces the previous one.
+
+For example, this recorded sequence remains supported:
+
+1. A1: finalize with the required recorded checks.
+2. A2: inspect new evidence, recording `contradicts: ["H1"]`,
+   `progress: ["contradiction"]`, an outcome and evidence references.
+3. A3: investigate the conflict; if evidence resolves it, record
+   `resolves: ["H1"]`, `progress: ["confidence_changed"]`, an outcome and references.
+4. A4: finalize again with all required checks based on the revised evidence.
+
+At A2 or A3, the conclusion state is `REOPENED`, `active_finalization` is null,
+and the audit adds `REOPENED_WITHOUT_FINALIZATION`; strict mode exits 1. Resolving
+the contradiction alone does not publish a new conclusion. At A4, the state can
+return to `FINALIZED`; the reopening warning disappears. An A4 that ignores an
+outstanding contradiction is `UNSUPPORTED` even when its checks are all true.
+Further rounds of investigation and finalization are allowed.
+
+The reopening warning is emitted only if the trace ends reopened. Historical
+`UNSUPPORTED_FINALIZATION` and other existing warnings remain visible, so strict
+mode can still exit 1 after a later valid conclusion. Default mode still exits 0
+for a valid input that was successfully audited. Strict exit 1 during ongoing
+investigation is advisory feedback, never an instruction to stop exploring.
+
+`strategy_state` still describes recorded progress/stalls independently of the
+conclusion state. `FINALIZED` means the annotated checks passed; it does not prove
+source truth, completeness or factual correctness. The auditor remains read-only.
+
 ## Behavioral evaluation protocol
 
 The checked-in fixtures test an **annotated-trace auditor**, not a language

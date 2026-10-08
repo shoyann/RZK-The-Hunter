@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.4.1
+
+- Fixed unrelated catalog queries receiving a positive score solely from low-risk preference; retained English/Chinese matching and existing CLI no-result behavior
+- Rejected non-finite visual scores/weights, negative weights and arithmetic overflow before emitting rankings; retained valid negative match scores and zero weights
+- Added explicit finalization lifecycle reporting: investigation after a conclusion supersedes it and may freely continue, resolve new evidence and record a new conclusion
+- Made strict audit flag a reopened investigation without a fresh finalization, while allowing repeated investigation/finalization cycles and preserving historical warnings
+- Added search, numeric-input and reopening CLI regressions, and included visual scoring tests in the release manifest
+
 ## 1.4.0
 
 - Added Adaptive Investigation Strategy: choose a discriminatory action before its tool; execute or explicitly defer the fastest falsifier before expanding an unverified branch

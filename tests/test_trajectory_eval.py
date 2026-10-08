@@ -162,6 +162,138 @@ class TrajectoryTests(unittest.TestCase):
         self.assertGreaterEqual(len(cases), 10)
         self.assertTrue(all(c["artifacts"] and c["request"] for c in cases))
 
+    def test_finalization_state_before_any_conclusion(self):
+        for data in (trace(), trace(action(1))):
+            with self.subTest(data=data):
+                result = audit(data)
+                self.assertEqual(result["finalization_state"], "NOT_FINALIZED")
+                self.assertIsNone(result["latest_finalization"])
+                self.assertIsNone(result["active_finalization"])
+                self.assertIsNone(result["reopened_at"])
+                self.assertEqual(result["metrics"]["reopened_investigations"], 0)
+
+    def test_finalization_followed_by_search_reopens_investigation(self):
+        data = trace(final(1), action(2))
+        before = copy.deepcopy(data)
+        result = audit(data)
+        self.assertEqual(data, before)
+        self.assertEqual(result["strategy_state"], "ACTIVE")
+        self.assertEqual(result["finalization_state"], "REOPENED")
+        self.assertIsNone(result["active_finalization"])
+        self.assertEqual(result["latest_finalization"], "A1")
+        self.assertEqual(result["reopened_at"], "A2")
+        self.assertEqual(result["metrics"]["reopened_investigations"], 1)
+        self.assertEqual([w["code"] for w in result["warnings"]],
+                         ["REOPENED_WITHOUT_FINALIZATION"])
+
+    @staticmethod
+    def new_contradiction(number, hypothesis="H1"):
+        return action(number, kind="falsify", hypothesis=hypothesis,
+                      contradicts=[hypothesis], progress=["contradiction"],
+                      evidence_refs=["fixture:new-primary-record"],
+                      outcome="New evidence contradicts the earlier conclusion")
+
+    @staticmethod
+    def resolve_contradiction(number, hypothesis="H1"):
+        return action(number, kind="verify", hypothesis=hypothesis,
+                      resolves=[hypothesis], progress=["confidence_changed"],
+                      evidence_refs=["fixture:original-record-correction"],
+                      outcome="Primary evidence explains the apparent contradiction")
+
+    def test_post_finalization_contradiction_is_reported(self):
+        result = audit(trace(final(1), self.new_contradiction(2)))
+        self.assertEqual(result["finalization_state"], "REOPENED")
+        self.assertEqual(result["metrics"]["unresolved_contradictions"], ["H1"])
+        self.assertEqual(result["metrics"]["unsupported_finalizations"], 0)
+        self.assertEqual(result["warnings"][0]["previous_finalization"], "A1")
+        self.assertEqual(result["warnings"][0]["unresolved_contradictions"], ["H1"])
+
+    def test_resolving_new_evidence_still_requires_new_finalization(self):
+        result = audit(trace(final(1), self.new_contradiction(2),
+                             self.resolve_contradiction(3)))
+        self.assertEqual(result["finalization_state"], "REOPENED")
+        self.assertEqual(result["metrics"]["unresolved_contradictions"], [])
+        self.assertIsNone(result["active_finalization"])
+        self.assertEqual(result["reopened_at"], "A2")
+        self.assertEqual([w["code"] for w in result["warnings"]],
+                         ["REOPENED_WITHOUT_FINALIZATION"])
+
+    def test_reinvestigation_can_reach_a_new_finalization(self):
+        result = audit(trace(final(1), self.new_contradiction(2),
+                             self.resolve_contradiction(3), final(4)))
+        self.assertEqual(result["finalization_state"], "FINALIZED")
+        self.assertEqual(result["active_finalization"], "A4")
+        self.assertEqual(result["latest_finalization"], "A4")
+        self.assertIsNone(result["reopened_at"])
+        self.assertEqual(result["metrics"]["reopened_investigations"], 1)
+        self.assertEqual(result["warnings"], [])
+
+    def test_multiple_reinvestigation_cycles_are_allowed(self):
+        result = audit(trace(final(1), self.new_contradiction(2),
+                             self.resolve_contradiction(3), final(4),
+                             self.new_contradiction(5, "H2"),
+                             self.resolve_contradiction(6, "H2"), final(7)))
+        self.assertEqual(result["active_finalization"], "A7")
+        self.assertEqual(result["finalization_state"], "FINALIZED")
+        self.assertEqual(result["metrics"]["reopened_investigations"], 2)
+        self.assertEqual(result["warnings"], [])
+
+    def test_new_finalization_cannot_ignore_new_contradiction(self):
+        result = audit(trace(final(1), self.new_contradiction(2), final(3)))
+        self.assertEqual(result["finalization_state"], "UNSUPPORTED")
+        self.assertEqual(result["latest_finalization"], "A3")
+        self.assertIsNone(result["active_finalization"])
+        self.assertIsNone(result["reopened_at"])
+        self.assertEqual(result["metrics"]["unsupported_finalizations"], 1)
+        self.assertEqual([w["code"] for w in result["warnings"]],
+                         ["UNSUPPORTED_FINALIZATION"])
+
+    def test_latest_finalization_must_supply_its_own_checks(self):
+        latest = final(2)
+        del latest["checks"]["direct_support"]
+        result = audit(trace(final(1), latest))
+        self.assertEqual(result["finalization_state"], "UNSUPPORTED")
+        self.assertIsNone(result["active_finalization"])
+        self.assertEqual(result["warnings"][0]["missing_checks"], ["direct_support"])
+        valid = audit(trace(final(1), final(2)))
+        self.assertEqual(valid["active_finalization"], "A2")
+        self.assertEqual(valid["metrics"]["reopened_investigations"], 0)
+        self.assertEqual(valid["warnings"], [])
+
+    def test_refinalization_preserves_historical_warnings(self):
+        unsupported = final(1)
+        unsupported["checks"]["direct_support"] = False
+        result = audit(trace(unsupported, action(2, kind="verify",
+                             progress=["new_primary"], evidence_refs=["fixture:record"]),
+                             final(3)))
+        self.assertEqual(result["finalization_state"], "FINALIZED")
+        self.assertEqual(result["active_finalization"], "A3")
+        self.assertEqual(result["metrics"]["reopened_investigations"], 1)
+        self.assertEqual([w["code"] for w in result["warnings"]],
+                         ["UNSUPPORTED_FINALIZATION"])
+
+    def test_reopening_cli_strict_exit_codes(self):
+        cases = [
+            (trace(final(1), self.new_contradiction(2)), 1, "REOPENED"),
+            (trace(final(1), self.new_contradiction(2),
+                   self.resolve_contradiction(3)), 1, "REOPENED"),
+            (trace(final(1), self.new_contradiction(2),
+                   self.resolve_contradiction(3), final(4)), 0, "FINALIZED"),
+            (trace(final(1), self.new_contradiction(2), final(3)), 1, "UNSUPPORTED"),
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "trace.json"
+            cmd = [sys.executable, str(ROOT / "scripts/trajectory_eval.py"), str(path)]
+            for data, code, state in cases:
+                with self.subTest(state=state, code=code):
+                    path.write_text(json.dumps(data), encoding="utf-8")
+                    before = path.read_bytes()
+                    result = subprocess.run(cmd + ["--strict"], capture_output=True, text=True)
+                    self.assertEqual(result.returncode, code, result.stderr)
+                    self.assertEqual(json.loads(result.stdout)["finalization_state"], state)
+                    self.assertEqual(subprocess.run(cmd, capture_output=True).returncode, 0)
+                    self.assertEqual(path.read_bytes(), before)
+
     def test_cli_exit_codes_and_read_only(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "trace.json"

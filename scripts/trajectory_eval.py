@@ -113,8 +113,19 @@ def audit(trace, window=3):
     response_latencies = []
     unsupported = 0
     previous = None
+    finalization_state = "NOT_FINALIZED"
+    latest_finalization = active_finalization = reopened_at = None
+    reopened_investigations = 0
 
     for index, row in enumerate(rows, start=1):
+        # New investigation work supersedes the earlier conclusion, without
+        # prohibiting exploration or requiring a special reopen action.
+        if row["kind"] != "finalize" and finalization_state in {"FINALIZED", "UNSUPPORTED"}:
+            finalization_state = "REOPENED"
+            active_finalization = None
+            reopened_at = row["id"]
+            reopened_investigations += 1
+
         progress = bool(row["progress"])
         if progress:
             progress_actions += 1
@@ -158,18 +169,38 @@ def audit(trace, window=3):
             response_latencies.append(index - contradictions.pop(resolved))
 
         if row["kind"] == "finalize":
+            latest_finalization = row["id"]
+            active_finalization = reopened_at = None
             needed = BASE_CHECKS | set(trace["requirements"])
             missing = sorted(check for check in needed if not row.get("checks", {}).get(check))
             if missing or contradictions:
+                finalization_state = "UNSUPPORTED"
                 unsupported += 1
                 warnings.append({"code": "UNSUPPORTED_FINALIZATION", "action": row["id"],
                                  "missing_checks": missing,
                                  "unresolved_contradictions": sorted(contradictions)})
+            else:
+                finalization_state = "FINALIZED"
+                active_finalization = row["id"]
+
+    if finalization_state == "REOPENED":
+        warnings.append({
+            "code": "REOPENED_WITHOUT_FINALIZATION",
+            "action": reopened_at,
+            "previous_finalization": latest_finalization,
+            "unresolved_contradictions": sorted(contradictions),
+            "detail": "Investigation continued after finalization; the earlier conclusion "
+                      "is superseded until a new finalization passes the recorded checks.",
+        })
 
     return {
         "schema_version": 1,
         "case_id": trace["case_id"],
         "advisory_only": True,
+        "finalization_state": finalization_state,
+        "latest_finalization": latest_finalization,
+        "active_finalization": active_finalization,
+        "reopened_at": reopened_at,
         "strategy_state": ("INSUFFICIENT_DATA" if not rows else
                            "STALLED" if no_progress >= window else "ACTIVE"),
         "window": window,
@@ -188,10 +219,12 @@ def audit(trace, window=3):
             "contradiction_response_actions": response_latencies,
             "unresolved_contradictions": sorted(contradictions),
             "unsupported_finalizations": unsupported,
+            "reopened_investigations": reopened_investigations,
         },
         "warnings": warnings,
         "limitations": "Annotated self-report audit only; does not verify source truth, "
-                       "actual tool use, requirement completeness, or model solve rate.",
+                       "actual tool use, requirement completeness, or model solve rate. "
+                       "FINALIZED means recorded checks passed, not independently verified truth.",
     }
 
 

@@ -3,7 +3,7 @@ name: awesome-osint-operator
 description: Ethical, evidence-first OSINT planning, tool selection, verification, monitoring, reporting, and guarded official wanted/fugitive-person location intelligence using a structured catalog adapted from jivoi/awesome-osint. Use for public-source domain, company, username, image, geospatial, news, fact-checking, defensive threat-intelligence, and verified official wanted-person research. Do not use for doxxing, stalking, credential acquisition, access bypass, continuous real-time tracking, or abusive/invasive profiling.
 license: CC-BY-SA-4.0
 metadata:
-  version: 1.4.0
+  version: 1.4.1
 ---
 
 # Awesome OSINT Operator
