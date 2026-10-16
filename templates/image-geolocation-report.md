@@ -1,43 +1,37 @@
 # Image/Video Geolocation Report — {{Title}}
 
-## Answer
+Use this template when a structured report is useful. For a simple lookup,
+answer with the decisive evidence and limitations. Omit inapplicable sections;
+do not add clues, candidates or tests to fill the template. Follow the
+[visual workflow](../workflows/image-video-geolocation.md) and
+[execution modes](../references/execution-modes.md).
 
-- **Location / requested output:**
-- **Confidence:**
-- **Exact target interpretation:**
+## Finding
 
-## Scope and limitations
+- **Requested output / precision:** coarse or precise, including relevant time/viewpoint
+- **Supported answer / confidence:**
+- **Ending outcome:** resolved / bounded_uncertain / blocked
+- **Material limitation or next discriminator, if unresolved:**
 
-## Scene model
+## Decisive evidence
 
-- Foreground:
-- Middle ground:
-- Background:
-- Camera/object/road relationship:
+| Observation / evidence ID | Source | What it establishes | Material limitation |
+|---|---|---|---|
 
-## High-value clue inventory
+## Precise scene or viewpoint verification (when required)
 
-| Clue ID | Raw observation | Family | Reliability | Specificity | What it supports | What it does not prove |
-|---|---|---|---|---|---|---|
+- Exact-object/scene match:
+- Relevant camera/object/road geometry or time relationship:
+- Independent evidence mechanisms, or direct authoritative resolution:
+- Strongest credible near-match/contradiction and the check result:
 
-## Candidate comparison
+## Alternatives (when material ambiguity exists)
 
-| Candidate | Supporting clues | Contradictions | Source independence | Geometry result | Overall assessment |
-|---|---|---|---|---|---|
+| Candidate | Direct support | Strongest contradiction or missing discriminator |
+|---|---|---|
 
-## Exact-object verification
+## Reproducibility and remaining uncertainty (when useful)
 
-## Geometric verification
-
-## Deliberate falsification tests
-
-1.
-2.
-
-## Source lineage
-
-## Contradictions and unresolved questions
-
-## Methodology
-
-## Sources
+Link existing clue notes or candidate records rather than copying them. Describe
+material transformations, source-lineage dependencies and unresolved conflicts.
+Include only the method detail needed to reproduce the decisive checks.

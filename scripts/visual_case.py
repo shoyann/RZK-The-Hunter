@@ -20,12 +20,66 @@ FILES = {
     "image-geolocation-report.md": TEMPLATES / "image-geolocation-report.md",
 }
 
+QUICK_NOTES = """# Visual Case Notes
 
-def init_case(case_dir: Path, force: bool = False) -> int:
+- Requested output and precision:
+- Original source or file:
+- Decisive observation and evidence reference:
+- Working answer and confidence:
+- Strongest relevant alternative or contradiction, and check:
+- Unresolved uncertainty or next useful action:
+
+Keep observations separate from interpretations. Add only evidence needed for the
+requested answer; do not invent extra candidates to fill a quota. Escalate to
+full mode if ambiguity, conflicting evidence or a precise viewpoint requires it.
+Full mode adds templates without replacing these notes.
+
+Detailed guidance when needed: workflows/image-video-geolocation.md and
+references/hypothesis-convergence.md in the skill package.
+"""
+
+QUICK_CHECKLIST = """# Visual Investigation Checklist
+
+Use only checks relevant to the requested precision; mark others not applicable.
+
+- [ ] Requested output and available original source identified
+- [ ] Answer linked to the decisive observed evidence
+- [ ] Relevant ambiguity or strongest contradiction checked
+- [ ] Exact identity/viewpoint, date or carrier completeness checked when required
+- [ ] Confidence, limitations and remaining uncertainty stated
+
+Escalate to full mode when the evidence needs structured comparison. Additional
+candidates, crops and falsification tests need a concrete information benefit.
+"""
+
+FULL_CHECKLIST = """# Visual Investigation Checklist
+
+Use templates and checks only where they affect the requested answer. For an
+ordinary lookup, direct support and a relevant ambiguity check may be sufficient.
+Exact identification requires discriminating evidence; viewpoint, historical and
+multi-frame questions also need the corresponding geometry, time or carrier check.
+No fixed number of clue families, candidates or falsification tests is required.
+
+- [ ] Requested target and required precision defined
+- [ ] Relevant original evidence preserved; hash if provenance needs it
+- [ ] Scene observations distinguished from interpretation
+- [ ] Crops or alternate OCR readings inspected where they could resolve ambiguity
+- [ ] Useful clues and genuine competing candidates compared, if any
+- [ ] Source lineages recorded for evidence used in the answer
+- [ ] Near-match or strongest-alternative test performed for ambiguous/exact identity
+- [ ] Camera/object/road geometry verified when the answer depends on viewpoint
+- [ ] Relevant historical date or carrier completeness verified when required
+- [ ] Contradictions and unresolved questions reported
+"""
+
+
+def init_case(case_dir: Path, force: bool = False, mode: str = "full") -> int:
+    if mode not in {"quick", "full"}:
+        raise ValueError("mode must be quick or full")
     case_dir.mkdir(parents=True, exist_ok=True)
     created = []
     skipped = []
-    for output_name, template in FILES.items():
+    for output_name, template in (FILES.items() if mode == "full" else ()):
         destination = case_dir / output_name
         if destination.exists() and not force:
             skipped.append(output_name)
@@ -33,24 +87,19 @@ def init_case(case_dir: Path, force: bool = False) -> int:
         shutil.copyfile(template, destination)
         created.append(output_name)
 
+    if mode == "quick":
+        notes = case_dir / "case-notes.md"
+        # Notes are analyst work, not a template to reset with --force.
+        if notes.exists():
+            skipped.append(notes.name)
+        else:
+            notes.write_text(QUICK_NOTES, encoding="utf-8")
+            created.append(notes.name)
+
     checklist = case_dir / "workflow-checklist.md"
     if not checklist.exists() or force:
         checklist.write_text(
-            """# Visual Investigation Checklist
-
-- [ ] Exact target and viewpoint relationship defined
-- [ ] Original file preserved and hashed
-- [ ] Full-frame scene model written before searching
-- [ ] Grid and semantic crop sweep completed
-- [ ] Alternate text/OCR readings recorded
-- [ ] At least three clue families inventoried
-- [ ] At least two candidate locations kept alive
-- [ ] Source lineages recorded
-- [ ] Exact-object near-match test completed
-- [ ] Camera/object/road geometry verified
-- [ ] Two deliberate falsification tests completed
-- [ ] Contradictions and unresolved questions reported
-""",
+            QUICK_CHECKLIST if mode == "quick" else FULL_CHECKLIST,
             encoding="utf-8",
         )
         created.append("workflow-checklist.md")
@@ -150,6 +199,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     init_parser = subparsers.add_parser("init", help="initialize a visual investigation directory")
     init_parser.add_argument("case_dir", type=Path)
+    init_parser.add_argument("--mode", choices=("quick", "full"), default="full",
+                             help="quick notes/checklist or full templates (default: full)")
     init_parser.add_argument("--force", action="store_true", help="overwrite existing template files")
 
     score_parser = subparsers.add_parser("score", help="aggregate a filled candidate matrix")
@@ -161,7 +212,7 @@ def main() -> int:
     args = build_parser().parse_args()
     try:
         if args.command == "init":
-            return init_case(args.case_dir, args.force)
+            return init_case(args.case_dir, args.force, args.mode)
         if args.command == "score":
             return score_candidates(args.matrix)
     except ValueError as exc:

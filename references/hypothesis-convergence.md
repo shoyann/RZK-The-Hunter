@@ -1,196 +1,122 @@
 # Hypothesis Convergence and Retry Control
 
-This reference prevents premature convergence: the failure mode where a plausible lead accumulates enough thematic matches to feel correct before the original evidence has been exhausted.
-
-The goal is not to maximize the number of clues supporting a candidate. The goal is to reach a state where the best explanation survives direct evidence, contradiction checks, and deliberate attempts to falsify it.
+Use this reference for ambiguous or multi-stage investigations and for precise
+conclusions that need a deliberate verification gate. It defines the common
+detailed evidence gate; scenario workflows add only their relevant checks.
+[Execution modes](execution-modes.md) define effort, checkpoints and ending
+outcomes. A failed evidence gate does not require unlimited investigation.
 
 ## Core principle
 
-A plausible explanation is not submission-safe while material first-party evidence remains unresolved.
+A plausible lead is not a precise verified answer while known material evidence
+could overturn it. Prefer original artifacts and authoritative primary records,
+then direct first-party sources, independent primary evidence, reliable secondary
+reporting, and finally discovery results. Matching search results from one
+lineage do not outweigh a conflicting original artifact.
 
-Search results are especially dangerous when they create a dense cluster of matching details. A cluster can still be wrong if every match descends from one mistaken pivot or if a stronger original artifact has not yet been processed.
+“Material” means capable of changing the answer to the user's actual question.
+It does not mean every linked page, embedded asset or imaginable transformation.
+Bound irrelevant or inaccessible evidence with a short reason.
 
-Use this order of authority unless the task context clearly requires otherwise:
+## Evidence readiness and ending outcomes
 
-1. Original artifact or authoritative primary record
-2. Direct first-party source or embedded resource
-3. Independent primary evidence
-4. High-quality secondary reporting
-5. Search/discovery results and aggregators
-6. Thematic similarity, coincidence, or analyst intuition
+These readiness states may be useful for a complex case; do not create a state
+log for every simple lookup.
 
-A lower layer can generate a hypothesis. It should not overrule an unresolved higher layer.
-
-## Investigation state machine
-
-Track the case through these states:
-
-### `COLLECTING`
-
-Primary evidence is still being enumerated or processed.
-
-Final-answer status: **blocked**.
-
-### `HYPOTHESIZING`
-
-At least one explanation exists, but material discriminators remain unresolved.
-
-Final-answer status: **blocked**.
-
-### `FALSIFYING`
-
-A leading hypothesis exists and is being attacked with contradiction searches, alternate transformations, competing candidates, or direct checks.
-
-Final-answer status: **blocked**.
-
-### `CONVERGED`
-
-The leading explanation survives the mandatory gate and no unresolved primary evidence could plausibly overturn it.
-
-Final-answer status: **allowed**.
-
-### `REOPENED`
-
-A rejection, contradiction, or newly discovered artifact invalidated the previous convergence state.
-
-Final-answer status: **blocked** until the gate passes again.
-
-## Primary-evidence queue
-
-At intake, enumerate every first-party artifact or direct path that may contain material evidence.
-
-Examples:
-
-- original image/video/audio/document;
-- attachments and embedded files;
-- source-provided URLs;
-- HTML source, scripts, metadata, favicon, feeds, URL fragments, downloadable assets;
-- archive captures and original versions;
-- structured carriers such as QR/barcodes;
-- alternate pages/views explicitly signaled by the source;
-- source-signaled transformations such as rotate, mirror, invert, decode, inspect source, inspect metadata, or compare versions.
-
-For each item record:
-
-- identifier;
-- why it may matter;
-- status: `unprocessed`, `processed`, `blocked`, `irrelevant`;
-- transformation attempts performed;
-- outputs produced;
-- whether it can falsify the leading hypothesis.
-
-Do not silently drop an item because another branch produced a plausible answer.
-
-## Structured visual carrier protocol
-
-When the artifact is a QR code, barcode, steganographic layout, layered graphic, or puzzle-like visual carrier:
-
-1. Preserve the original bytes and dimensions.
-2. Decode the original orientation.
-3. If the source or structure suggests transformation, test relevant rotations, mirror states, inversion, threshold/channel variants, and alternate layers.
-4. Record every reproducible payload independently.
-5. Treat multiple valid payloads as parallel evidence branches until their roles are resolved.
-6. A valid first payload does **not** prove the carrier has been exhausted.
-
-Do not perform arbitrary combinatorial image mutations without a reason. Transformations should be source-signaled, structurally motivated, or cheap enough to be a standard sanity sweep.
-
-## Hypothesis ledger
-
-Each candidate explanation should have an explicit record:
-
-| Field | Meaning |
+| Readiness | Meaning |
 |---|---|
-| ID | `H1`, `H2`, ... |
-| Claim | What the hypothesis says |
-| Status | `open`, `leading`, `contradicted`, `verified` |
-| Supporting evidence | Direct support only |
-| Contradictions | Evidence against it |
-| Untested primary evidence | Items that could overturn it |
-| Independence | Whether supporting clues come from distinct mechanisms |
-| Fastest falsifier | Cheapest decisive test |
-| Confidence | low / medium / high |
+| `COLLECTING` | Material primary evidence is still being processed. |
+| `HYPOTHESIZING` | A candidate exists but necessary discriminators are unresolved. |
+| `FALSIFYING` | The leading claim is being tested against a credible contradiction or alternative. |
+| `CONVERGED` | The applicable evidence gate passes at the requested precision. |
+| `REOPENED` | New material evidence or rejection invalidated a previous conclusion. |
 
-A hypothesis cannot be `verified` merely because search results produce many matching details.
+Readiness describes evidence, not whether the turn may end. A case still
+collecting or falsifying can end as `bounded_uncertain` or `blocked` under the
+execution-mode rules. It must not present an unverified precise answer as resolved.
+These terms do not change the version-1 trajectory audit schema or its states.
 
-Before expanding a leading branch, turn its fastest falsifier into a concrete
-candidate action and execute it or document why it is deferred. Record result
-and belief change separately; an inaccessible or inconclusive check is not
-disproof. Use [adaptive strategy](adaptive-investigation-strategy.md) to compare
-actions. The states above describe evidence readiness, not a mandatory linear
-search order; strategy can move among methods while the answer gate stays closed.
+## Primary evidence and hypotheses
 
-## Search-coincidence hazard
+For a multi-stage case, keep a compact queue of unresolved material artifacts:
+supplied originals, direct URLs, relevant embedded resources, metadata, archives,
+attachments or source-signaled alternate views. Record the item, why it matters,
+status (`unprocessed`, `processed`, `blocked`, `irrelevant`) and decisive result.
+Link existing notes rather than copying excerpts into multiple records.
 
-Treat a candidate as vulnerable to coincidence when any of these are true:
+Keep only live hypotheses and meaningful rejected alternatives. For each, retain:
+claim, direct support, strongest contradiction, untested material evidence,
+cheapest decisive test and status (`open`, `leading`, `contradicted`, `verified`).
+Confidence and source-lineage notes belong with the evidence they describe.
+No minimum number of hypotheses or persistent files is required.
 
-- it was generated from one distinctive number, phrase, date, or name;
-- several supporting pages copy the same source;
-- later details were searched specifically to fit the candidate;
-- the candidate explains secondary clues but not the original artifact;
-- a material first-party branch remains unprocessed;
-- the answer format is being guessed while the underlying claim is still uncertain.
+Before expanding a branch that depends on an untested anchor, test its cheapest
+decisive falsifier or record a short reason for preferring another action. Reuse
+a completed check when its evidence and assumptions have not changed. An
+inaccessible or inconclusive test neither verifies nor disproves the hypothesis.
+Consult [adaptive strategy](adaptive-investigation-strategy.md) at consequential
+choices or stalls, not before every tool call.
 
-When this hazard is present, lower confidence and return to falsification.
+## Structured visual carriers
 
-## Mandatory convergence gate
+For QR codes, barcodes, layered graphics or puzzle-like carriers:
 
-A final answer is submission-safe only when all boxes are checked:
+1. Preserve the original bytes and decode the original representation.
+2. If the source or structure signals a relevant transformation, test it:
+   rotation, mirror, inversion, channel/threshold view or alternate layer.
+3. Keep reproducible payloads distinct until their roles are understood.
+4. Treat a first valid payload as sufficient only when no material source-signaled
+   branch remains unresolved.
 
-- [ ] The exact task and required output format are understood.
-- [ ] Material first-party artifacts are processed or explicitly bounded.
-- [ ] Source-signaled alternate representations/transformations are resolved.
-- [ ] The leading hypothesis has direct support, not only thematic or search similarity.
-- [ ] Supporting evidence includes independent mechanisms where appropriate.
-- [ ] At least one deliberate falsification attempt was performed.
-- [ ] The second-best explanation or unresolved alternative was tested enough to reject or bound it.
-- [ ] Credible contradictions are resolved or reflected in confidence.
-- [ ] No unresolved primary evidence could plausibly overturn the answer.
-- [ ] The final wording is derived from the evidence or task format, not guessed by repeated mutation.
+Do not enumerate arbitrary transformations. A cheap sanity check is appropriate
+when it addresses a credible ambiguity; additional transforms need a concrete
+discriminator. Apply execution-mode checkpoints to this work too.
 
-If any material box is unchecked, return a provisional finding and the next discriminator instead of a precise final answer.
+## Common convergence gate
 
-## Rejection loop
+Before presenting a precise, verified investigative conclusion, check:
 
-A rejected answer is not permission to brute-force wording.
+- The exact question, relevant time, requested precision and output format are understood.
+- Material supplied/first-party evidence is processed or explicitly bounded.
+- Relevant source-signaled alternate representations or transformations are resolved.
+- The claim has direct support, not merely thematic similarity or search coincidence.
+- Support uses independent evidence mechanisms where needed; copied sources count once.
+- The strongest credible alternative or contradiction has been deliberately tested.
+- Remaining contradictions are resolved or bounded so they cannot overturn the stated conclusion.
+- No known unresolved material primary evidence could plausibly overturn that conclusion.
+- The answer follows the evidence and requested format, rather than repeated answer-string guesses.
 
-When an answer is rejected:
+A deliberate falsification check can be part of an existing source comparison;
+it need not be a separate search or tool call. A direct authoritative lookup
+does not require invented alternatives or a ceremonial second source. For
+precise visual or guarded work, apply the additional scenario-specific checks.
+Official wanted/fugitive safety and activation gates always remain mandatory.
 
-1. Record the exact submitted answer and rejection.
-2. Separate **claim failure** from **format failure**.
-3. Do not assume format failure unless the underlying claim already passed the convergence gate.
-4. Roll back to the last verified checkpoint.
-5. Mark hypotheses affected by the rejection.
-6. Reopen unprocessed first-party evidence and alternate branches.
-7. Change one assumption at a time.
-8. Run the cheapest falsifier.
-9. Re-enter the convergence gate.
+If a material condition is unmet, follow execution-mode continuation or ending
+rules. Report the supported finding, uncertainty and next discriminator rather
+than claiming precision. A bounded result must visibly retain its limitations;
+it is not a bypass for calling an unsupported claim verified.
 
-This mirrors a software-engineering agent loop:
+## Rejection and reopening
 
-`attempt -> test -> failure -> inspect -> revise one assumption -> retest -> converge`
+A rejection is evidence, not permission to brute-force wording.
 
-The investigation equivalent is:
+1. Record the submitted claim and rejection.
+2. Distinguish claim failure from a demonstrated format failure. Do not assume
+   format failure while the claim is still unsupported.
+3. Reopen only hypotheses, evidence items and checks affected by the rejection;
+   keep unaffected verified evidence and completed checks.
+4. Change one material assumption at a time and choose the cheapest decisive test.
+5. Reapply the relevant gate if the evidence changes.
 
-`hypothesis -> evidence test -> contradiction/rejection -> rollback -> reopen evidence -> falsify -> reconverge`
+A wording-only rejection of an already verified claim may need a format correction,
+not a fresh full investigation. A new conflict can reopen a resolved case, but
+must still use the execution-mode budget and stagnation rules.
 
-## Stop conditions
+## Compact reporting
 
-Stop and report uncertainty when:
-
-- the decisive primary source is inaccessible through lawful means;
-- remaining branches are indistinguishable with available evidence;
-- additional collection would be disproportionate, invasive, or outside scope;
-- the answer depends on private or restricted data not authorized for use.
-
-A disciplined unresolved result is better than a confident false positive.
-
-## Minimal reporting block
-
-For multi-stage investigations, include:
-
-- **Current state:** collecting / hypothesizing / falsifying / converged / reopened
-- **Leading hypothesis:** claim + confidence
-- **Unprocessed primary evidence:** count or list
-- **Strongest contradiction:** one line
-- **Fastest falsifier:** one line
-- **Submission-safe:** yes / no
+Report the answer or current supported finding, confidence, decisive source(s),
+and any material limitation. For a complex unresolved case, add the leading
+hypothesis, strongest contradiction and next cheapest discriminator. Include a
+readiness state or evidence queue only when it helps the user continue or audit
+the work. Do not duplicate the case notes in every update.

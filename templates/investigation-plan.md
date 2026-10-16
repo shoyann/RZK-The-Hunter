@@ -1,5 +1,8 @@
 # Investigation Plan
 
+Use for a multi-stage or requested plan; omit irrelevant sections. For a lookup,
+keep the objective, source and uncertainty inline.
+
 ## Objective
 
 ## Decision supported
@@ -12,7 +15,9 @@
 - Authorization / public-interest basis:
 - Allowed source types:
 - Excluded data and actions:
-- Stop conditions:
+- Mode and requested precision:
+- Collection checkpoint / user hard limits:
+- Stop conditions / completion outcome:
 
 ## Known identifiers
 
@@ -44,9 +49,9 @@
 - Exact requested output and viewpoint relationship:
 - Original-file metadata/hash status:
 - Full-frame scene model:
-- Grid/semantic crop plan:
-- Required clue families:
+- High-value crops or alternate views needed:
+- Relevant independent evidence mechanisms:
 - Alternative text/OCR readings:
 - Negative clues / expected-but-absent features:
-- Candidate minimum and falsification tests:
+- Credible alternatives and the most discriminating test:
 - Exact-scene and geometry verification plan:

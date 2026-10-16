@@ -1,5 +1,15 @@
 # Strategy evaluation and v1.4 scope
 
+## v1.5 execution guidance
+
+The [execution modes](execution-modes.md) govern collection budgets and useful
+completion outcomes. This auditor remains optional and schema v1 remains unchanged:
+`bounded_uncertain` and `blocked` are report outcomes, not new trace actions or
+passing precise-answer finalizations. Do not keep collecting merely to clear an
+advisory warning. Optional host usage records belong in `run-metrics.jsonl`, outside
+this strict schema. No v1.5 model comparison has been run; regression checks and
+static text sizes are not an end-to-end benchmark.
+
 ## Baseline diagnosis
 
 Baseline: v1.3.0, commit c2a82aaf289bdbd60329764b3333012b9d91075b.

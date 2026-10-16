@@ -1,5 +1,10 @@
 # OSINT Report — {{Title}}
 
+For full/audit deliverables only. Omit irrelevant sections; ordinary answers need
+only a conclusion, key sources and uncertainty.
+
+- Completion outcome: resolved / bounded_uncertain / blocked
+
 ## Executive summary
 
 ## Scope, authorization, and limitations

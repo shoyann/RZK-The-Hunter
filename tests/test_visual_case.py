@@ -16,6 +16,72 @@ FIELDS = [
 ]
 
 
+class VisualCaseInitTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.case_dir = Path(self.temporary.name) / "case"
+
+    def init(self, *options):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "init", str(self.case_dir), *options],
+            capture_output=True, text=True, encoding="utf-8",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return result
+
+    def snapshot(self):
+        return {path.name: path.read_bytes() for path in self.case_dir.iterdir()}
+
+    def test_default_mode_retains_full_template_set(self):
+        self.init()
+        self.assertEqual(set(self.snapshot()), {
+            "visual-clues.csv", "location-candidates.csv",
+            "image-geolocation-report.md", "workflow-checklist.md",
+        })
+        checklist = (self.case_dir / "workflow-checklist.md").read_text()
+        self.assertIn("No fixed number", checklist)
+        self.assertNotIn("At least two candidate", checklist)
+        self.assertNotIn("Two deliberate falsification", checklist)
+
+    def test_quick_mode_only_creates_notes_and_checklist(self):
+        self.init("--mode", "quick")
+        self.assertEqual(set(self.snapshot()), {"case-notes.md", "workflow-checklist.md"})
+        notes = (self.case_dir / "case-notes.md").read_text()
+        self.assertIn("workflows/image-video-geolocation.md", notes)
+        self.assertIn("evidence reference", notes)
+
+    def test_upgrade_to_full_preserves_notes_and_completed_checklist(self):
+        self.init("--mode", "quick")
+        notes = self.case_dir / "case-notes.md"
+        checklist = self.case_dir / "workflow-checklist.md"
+        notes.write_text("Analyst evidence and source references\n", encoding="utf-8")
+        checklist.write_text("- [x] Completed investigation work\n", encoding="utf-8")
+        before = self.snapshot()
+        self.init("--mode", "full")
+        for name, content in before.items():
+            self.assertEqual((self.case_dir / name).read_bytes(), content)
+        self.assertEqual(len(self.snapshot()), 5)
+
+    def test_repeated_modes_do_not_overwrite_existing_work(self):
+        self.init("--mode", "full")
+        for path in self.case_dir.iterdir():
+            path.write_text(f"Existing analyst work: {path.name}\n", encoding="utf-8")
+        before = self.snapshot()
+        self.init("--mode", "quick")
+        self.init("--mode", "full")
+        for name, content in before.items():
+            self.assertEqual((self.case_dir / name).read_bytes(), content)
+
+    def test_force_does_not_reset_case_notes(self):
+        self.init("--mode", "quick")
+        notes = self.case_dir / "case-notes.md"
+        notes.write_text("Preserve original evidence\n", encoding="utf-8")
+        self.init("--mode", "quick", "--force")
+        self.init("--mode", "full", "--force")
+        self.assertEqual(notes.read_text(), "Preserve original evidence\n")
+
+
 class VisualCaseScoringTests(unittest.TestCase):
     def run_score(self, rows):
         with tempfile.TemporaryDirectory() as directory:

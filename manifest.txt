@@ -13,6 +13,7 @@ references/catalog.csv
 references/adaptive-investigation-strategy.md
 references/catalog.json
 references/evidence-confidence.md
+references/execution-modes.md
 references/hypothesis-convergence.md
 references/query-playbook.md
 references/safety-policy.md
@@ -40,6 +41,8 @@ templates/source-evaluation.md
 templates/strategy-checkpoint.md
 templates/visual-clue-inventory.csv
 tests/test_catalog.py
+tests/test_evidence_ledger.py
+tests/test_tool_selection.py
 tests/test_visual_case.py
 tests/test_trajectory_eval.py
 tests/test_strategy_package.py

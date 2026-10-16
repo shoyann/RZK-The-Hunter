@@ -1,290 +1,151 @@
 # Image, Video, and Geolocation Workflow
 
-The objective is not to find one plausible clue. It is to build a **multi-signal explanation** in which the visible scene, the candidate location, and the exact wording of the question all agree.
+Match the investigation to the requested precision. A similar object, a nearby
+address or a single ambiguous sign is a lead, not proof of an exact scene.
+Follow [execution modes](../references/execution-modes.md) for budgets and ending
+outcomes, and the [common convergence gate](../references/hypothesis-convergence.md)
+for precise, verified conclusions. The stages below are coverage guidance, not
+a mandatory sequence of tool calls or documents.
 
-A search result is a lead. A visually similar object is a lead. An address near the object is a lead. None of these alone establishes the requested street, building, date, or camera position.
+## Choose the required precision
 
-At a branch decision use [adaptive strategy](../references/adaptive-investigation-strategy.md):
-test the cheapest silhouette/exact-object contradiction before constructing
-dependent neighborhood theories. For a dated scene, verify that the chosen
-representation covers the required period; current signage is only a lead.
-If recognition fails, classify the failure and try an appropriate non-generative
-representation or original copy. Generated pixels never resolve an exact digit.
-The stages below organize evidence coverage, not an inflexible execution order.
-
-## Default evidence contract
-
-Unless one authoritative primary source resolves the exact question directly, do not submit a precise location from a single clue or a single source lineage.
-
-For a high-confidence exact-location answer, normally require:
-
-- at least **three distinct clue families** collected from the media;
-- at least **two independent clue families** supporting the city or region;
-- an exact-object or exact-scene match when a distinctive object is central to the task;
-- a **geometric verification** for the requested street/building/direction using maps, street-level imagery, satellite, parcel/address data, or an equivalent spatial source;
-- no unresolved high-value contradiction;
-- at least two deliberate attempts to falsify the leading candidate.
-
-A primary source that explicitly identifies the exact depicted object and its precise position can reduce the number of required sources, but it does not remove the need to answer the question's geometry correctly.
-
-## Stage 0 — Define the exact target
-
-Rewrite the task as a testable output before searching.
-
-Examples:
-
-- “Identify the city” is different from “name the street behind the photographer.”
-- “Where is the statue located?” is different from “which road is visible beyond the statue?”
-- “When was the image posted?” is different from “when was the scene photographed?”
-
-Record:
-
-- requested granularity: country / city / venue / street / building / coordinates / time range;
-- viewpoint relationship: in front of, behind, across from, reflected in, viewed through;
-- acceptable uncertainty;
-- what would constitute a complete answer.
-
-## Stage 1 — Preserve and inspect the original
-
-1. Preserve the original file; do not begin from a screenshot if the original is available.
-2. Record filename, dimensions, format, byte size, color profile, and cryptographic hash.
-3. Inspect EXIF/XMP/IPTC/container metadata and edit/export history signals.
-4. Note whether metadata is absent, stripped, internally inconsistent, or inherited from a repost.
-5. For video, extract representative keyframes and preserve timestamps relative to the clip.
-
-Metadata is evidence only when its provenance is trustworthy. Missing metadata is not evidence that an image is fabricated.
-
-## Stage 2 — Exhaustive clue harvest before web searching
-
-**Do not commit to a location hypothesis yet.** First inventory the entire frame.
-
-Use two passes:
-
-### Pass A: full-frame scene model
-
-Describe the scene without naming a place:
-
-- environment and land use;
-- foreground, middle ground, and background layers;
-- likely camera position and viewing direction;
-- occlusions, reflections, cropping, and perspective;
-- which elements are permanent, semi-permanent, or transient.
-
-### Pass B: systematic region sweep
-
-Inspect a 3×3 or 4×4 grid plus semantic crops. Create crops for every information-bearing region, not only the most obvious sign.
-
-Record each clue in `templates/visual-clue-inventory.csv`. Preserve the raw observation before interpretation.
-
-Required clue families:
-
-| Family | Examples |
+| Requested result | Required visual work |
 |---|---|
-| Text and language | signs, plaques, storefronts, posters, partial letters, diacritics, typography |
-| Symbols and heraldry | flags, coats of arms, seals, logos, uniforms, religious or civic symbols |
-| Vehicles | registration format, regional prefix, inspection stickers, vehicle fleet, driving side |
-| Roads and transport | lane markings, curbs, bollards, tram wires, bus-stop design, rails, paving |
-| Architecture | roof form, façade, windows, balconies, materials, building age, setbacks |
-| Public realm | benches, lamps, bins, planters, fences, utility cabinets, street furniture |
-| Named or distinctive objects | statues, murals, monuments, sculptures, playgrounds, bridges |
-| Commerce and institutions | business type, menus, awnings, hotel/clinic/school cues, opening-hours format |
-| Physical geography | coastline, lake, river, relief, soil, rock, skyline, horizon |
-| Ecology and season | tree species, vegetation, leaf state, landscaping, snow, agricultural pattern |
-| Weather and illumination | cloud type, wetness, shadow direction, sun elevation, artificial lighting |
-| Human activity | clothing, event context, tourism patterns, mobility modes; avoid identity inference |
-| Capture/provenance | compression, screenshot UI, watermark, crop lineage, generative/edit artifacts |
-| Negative clues | expected but absent features, incompatible road rules, impossible terrain or season |
+| **Coarse:** country, region, city, broad date range, or a provenance lookup | Brief full-frame inspection; prioritize clear, discriminating clues; verify only what supports the requested granularity. Do not require street geometry or an exhaustive candidate matrix. |
+| **Precise:** exact venue, building, street, coordinates, object identity, camera direction, or exact time | Establish exact-scene/object identity, relevant independent evidence mechanisms, and the spatial or temporal relationship actually requested. Test the strongest plausible near-match or contradiction. |
 
-For every clue, record:
+A coarse task may still need deep investigation if evidence is ambiguous.
+A direct authoritative source may resolve a precise question cheaply when it
+identifies the exact depicted scene and the required relationship. Mode controls
+effort; requested precision controls the proof needed. People-related safety and
+official wanted/fugitive activation gates are never relaxed by either choice.
 
-- exact frame location;
-- raw visual observation;
-- alternative readings or interpretations;
-- clue family;
-- readability/visibility;
-- geographic specificity;
-- expected stability over time;
-- potential privacy risk;
-- next verification action.
+## 1. Define and inspect the target
 
-### Text extraction protocol
+Identify the requested granularity, relevant date and viewpoint relationship.
+“Where is the statue?” differs from “which street is behind the photographer?”
+An upload date differs from a capture date. Use the supplied context without
+creating a formal intake record for a simple lookup.
 
-- Inspect the original and multiple targeted crops.
-- Try perspective correction, rotation, contrast, sharpening, and channel/grayscale variants when useful.
-- Treat OCR output as a set of hypotheses, not a transcription.
-- Keep ambiguous characters explicit, for example `NE?`, `N?L`, or `[A/O]`.
-- Search alternative readings separately before combining them.
-- Never allow a guessed plaque title to override contradictory regional clues.
+Preserve the original. Prefer its bytes to a screenshot when available. Inspect
+metadata, edit/export signals or keyframes when they can answer or falsify the
+question. Record hashes, dimensions and transformations for a reproducible case
+or when provenance is disputed; do not require a separate file operation for
+every ordinary visual lookup. Missing metadata does not establish fabrication.
 
-### Privacy rule for plates and people
+## 2. Inspect before committing to a hypothesis
 
-Use only the minimum plate information needed for geographic classification, such as country format or regional prefix. Do not publish a complete private vehicle plate. Do not identify a private person by face.
+Start with a brief full-frame pass: foreground/background, permanent objects,
+text, roads, terrain, occlusion, reflections and obvious contradictions. Then
+inspect the most informative regions, often two or three, as needed. Record raw
+observations separately from interpretations and retain consequential ambiguity.
 
-## Stage 3 — Rank clue value
+Expand to a grid, additional crops or the full
+[visual clue taxonomy](../references/visual-clue-taxonomy.md) only when the scene
+is complex, the first clues conflict, a search stalls, or unexamined regions may
+change the answer. Do not create a crop or record for every visible object.
 
-Not every visible feature deserves equal weight. Score each clue from 0–3 on:
+Useful clue families include text/language, symbols, vehicle format, roads,
+architecture, distinctive objects, commerce, landscape, ecology, illumination,
+provenance and expected-but-absent features. Choose families for their ability to
+distinguish candidates; no minimum family count applies to every task.
 
-- **Readability:** how clearly it is observed;
-- **Specificity:** how narrowly it constrains geography, time, or object identity;
-- **Stability:** whether it is likely to remain fixed and map-verifiable;
-- **Independence:** whether it adds a new signal rather than repeating another clue;
-- **Falsifiability:** whether a candidate can clearly pass or fail against it.
+Use [the clue inventory](../templates/visual-clue-inventory.csv) when a persistent
+record is useful. Otherwise keep short notes on the strongest clues, important
+alternate readings, contradictions and next useful check. Numerical scoring is
+optional when it helps compare many clues; it is not a prerequisite to searching.
 
-Prioritize clues that are clear, distinctive, stable, and independently testable. A partially readable regional plate prefix may be more valuable than a generic royal statue; a precise building façade may be more valuable than vegetation common across a continent.
+### Ambiguous text and structured carriers
 
-Do not discard low-confidence clues. Keep them as alternate hypotheses with lower weight.
+- Compare important OCR readings with the original and a targeted crop. Keep
+  uncertain characters explicit, such as `NE?` or `[A/O]`.
+- Use perspective correction, rotation or channel/contrast views when they
+  address a specific recognition failure. Generated pixels are not evidence.
+- Search alternate readings only when they could change the candidate set;
+  do not expand every unreadable character into a query branch.
+- For QR codes, barcodes, layers or puzzle-like carriers, use the structured
+  carrier protocol in the common convergence reference. Preserve reproducible
+  payloads and test relevant source-signaled transformations.
 
-## Stage 4 — Open parallel search lanes
+Use only the minimum vehicle-plate information needed for geographic
+classification. Do not publish a complete private plate or identify a private
+person by face.
 
-Search major clue families separately before merging them. This reduces confirmation bias and reveals contradictions early.
+## 3. Search for discriminating evidence
 
-Recommended lanes:
+Choose the action most likely to resolve a material uncertainty: an original
+source lookup, exact-object comparison, administrative clue, provenance check,
+or map relationship. Use [adaptive strategy](../references/adaptive-investigation-strategy.md)
+at a consequential branch or stall; do not rehearse a strategy table before each
+search.
 
-1. **Text lane:** exact and alternative transcriptions, translations, names, business fragments.
-2. **Object lane:** reverse-image search and descriptive search for distinctive art, monuments, signs, or infrastructure.
-3. **Administrative lane:** plate formats, road rules, public signage systems, municipal symbols.
-4. **Built-environment lane:** architecture, street furniture, transit infrastructure, business type.
-5. **Landscape lane:** terrain, shoreline, vegetation, weather, sun and season.
-6. **Provenance lane:** earliest publication, source page, archive captures, related frames.
+Separate evidence mechanisms when needed to avoid confirmation bias. Text,
+object, administrative, built-environment, landscape and provenance searches are
+available lanes, not six required searches. Use another reverse-image engine
+only if its coverage can add useful evidence. Batch independent checks when the
+host tools support it; dependent checks wait for the evidence they need.
 
-Use multiple reverse-image engines or visual-search approaches where available. A reverse-image hit must be checked for:
+Keep a credible alternative when ambiguity exists. Do not invent two to five
+candidates after a direct exact match. For each live candidate, keep only its
+support, strongest contradiction and cheapest decisive test. Use
+[the candidate matrix](../templates/location-candidate-matrix.csv) for genuinely
+complex comparisons; do not score every candidate against every minor clue.
 
-- exact shape and damage/wear patterns;
-- plaque placement;
-- adjacent buildings and vegetation;
-- whether it is the original object or merely the same subject/theme;
-- publication lineage and copying.
+Multiple pages copying an article, reposting one photograph or using one address
+database count as one lineage. Prefer evidence with distinct mechanisms, such as
+an exact scene photograph and a map relationship. A higher page count alone does
+not increase confidence.
 
-## Stage 5 — Generate multiple candidates
+## 4. Verify the requested relationship
 
-Maintain at least 2–5 plausible candidates until discriminating evidence eliminates them. Include an “unresolved/other” option.
+For a coarse answer, verify the geographic or temporal discrimination needed for
+that answer and bound anything finer. Do not infer an exact street merely because
+the city is supported.
 
-For each candidate, state:
+For a precise location or viewpoint, stop broad search when a candidate is strong
+enough to test directly. Compare exact object shape, wear, plaque placement,
+façade sequence and stable surroundings. Verify the geometry relevant to the
+question: object and camera positions, road/path order, camera side or heading,
+and whether a nearby mailing address describes the street actually asked for.
 
-- why it was generated;
-- which clue families support it;
-- which clues are unknown;
-- what would disprove it fastest;
-- the next highest-information verification step.
+Use the smallest suitable spatial evidence set: official map, street imagery,
+satellite view, building footprint, address record or another documented view.
+An authoritative source that directly resolves the exact scene and relationship
+can be sufficient; otherwise combine independent mechanisms. Do not require
+every available map type or additional imagery dates without a relevant reason.
 
-Do not let the first plausible search result become the de facto answer.
+Test the strongest plausible near-match or contradiction before a precise
+conclusion. Examples include a duplicate statue, an incompatible road layout, an
+opposite entrance, or a missing feature that should be visible. This can be part
+of the exact-scene comparison rather than a separate tool call. Additional
+adversarial checks are warranted by remaining uncertainty, not a fixed quota.
 
-## Stage 6 — Candidate matrix and source-lineage control
+When time matters, distinguish capture, upload/publication, event and archive
+times. Choose date evidence that addresses the question, such as construction
+history, an event record or provenance. Shadows, weather and vegetation are
+additional tests when useful, not mandatory lanes. Report a range when exact time
+is unsupported.
 
-Use `templates/location-candidate-matrix.csv`.
+## 5. Conclude at supported precision
 
-Score each candidate against each material clue:
+Apply the common convergence gate with these visual additions only where
+relevant: exact-scene identity, independent evidence mechanisms, requested
+geometry/time, and the strongest credible near-match. Confidence follows the
+weakest necessary link.
 
-- `+2` exact or highly distinctive match;
-- `+1` compatible but non-unique;
-- `0` unknown/not testable;
-- `-1` tension or weak mismatch;
-- `-2` direct contradiction.
+If evidence supports only a city when the user asked for a street, report that
+boundary and the missing discriminator under the execution-mode ending rules.
+Do not keep collecting solely to satisfy a checklist count.
 
-Multiply by clue weight when useful. Record the source and reasoning for every non-zero score.
-
-### Independence rules
-
-Do not count these as independent corroboration:
-
-- multiple pages copying the same article or press release;
-- directories syndicating one address database;
-- reposts of the same photograph;
-- two search snippets sourced from one underlying page;
-- an article and a summary generated from that article.
-
-Record the likely source lineage. Prefer different evidence mechanisms, for example:
-
-- regional plate convention;
-- exact statue photograph;
-- official municipal map;
-- satellite geometry;
-- independent business address tied to a visible storefront.
-
-## Stage 7 — Exact-scene and geometric verification
-
-Once the city or candidate venue is plausible, stop broad searching and reconstruct the camera geometry.
-
-Verify:
-
-- exact object position;
-- camera side of the object;
-- visible façade sequence and roofline;
-- road, path, water, fence, and vegetation order;
-- likely camera heading and field of view;
-- which street lies **behind**, **across from**, or **adjacent to** the photographer;
-- whether addresses refer to the object's mailing address or to the road actually asked for.
-
-Use, as available:
-
-- official maps and cadastral/parcel maps;
-- street-level imagery from more than one date;
-- satellite/aerial imagery;
-- building footprints and address points;
-- business directories tied to visible signs;
-- photographs from different viewpoints;
-- terrain and sun-position tools.
-
-A nearby address is not a geometric proof. A venue may have entrances on multiple streets. A monument can be described as “near Street A” while the street visible behind the camera is Street B.
-
-## Stage 8 — Deliberate falsification
-
-Before finalizing, perform at least two adversarial checks against the leading candidate.
-
-Examples:
-
-- Search for another object with the same name or theme.
-- Compare the exact crown, shield, plaque, damage, tree trunk, façade, or skyline silhouette.
-- Test whether the plate prefix or road design is incompatible.
-- Look at the scene from the opposite side and from older imagery.
-- Inspect the second-best candidate using the same rigor.
-- Ask what should be visible if the leading candidate were correct, then check whether it is present.
-
-Explicitly document contradictions. Do not silently reinterpret them away.
-
-## Stage 9 — Time verification
-
-When time matters, separate:
-
-- capture time;
-- upload/publication time;
-- event time;
-- archive capture time.
-
-Use shadows, sun position, weather records, vegetation, construction history, signage, schedules, and image provenance as independent signals. Report a range unless multiple signals justify precision.
-
-## Stage 10 — Answer gate
-
-Before submitting, complete this checklist:
-
-- [ ] The exact question and requested granularity are answered.
-- [ ] The full frame was inventoried before hypothesis commitment.
-- [ ] At least three clue families were considered.
-- [ ] City/region is supported by two independent clue families or an exact authoritative source.
-- [ ] Exact object/scene identity has been tested against near-matches.
-- [ ] The requested street/building/direction is geometrically verified.
-- [ ] Source independence has been checked.
-- [ ] At least two falsification attempts were performed.
-- [ ] Contradictions and alternate candidates are stated.
-- [ ] Confidence reflects the weakest necessary link, not the strongest clue.
-
-If the gate is not met, return the best candidates and the unresolved discriminators instead of a precise but fragile answer.
-
-## Reporting format
-
-1. **Answer** and confidence.
-2. **Exact target interpretation** — what was identified and from which viewpoint.
-3. **Clue inventory summary** — include both supporting and contradictory clues.
-4. **Candidate comparison** — why the winner beat the alternatives.
-5. **Geometric verification** — map/street/satellite relationship.
-6. **Source lineage and independence**.
-7. **Limitations and remaining uncertainty**.
-
-Clearly label each statement as verified fact, corroborated inference, single-source lead, contradicted, or unknown.
+Default output: answer and confidence, the decisive evidence with sources,
+relevant geometry/time explanation, and material uncertainty or contradiction.
+Add a clue inventory, candidate comparison or full geolocation report only when
+the complexity or requested deliverable warrants it.
 
 ## Boundaries
 
 - Do not identify a private person by face.
-- Do not infer or reveal a private residence or live location.
+- Do not infer or reveal a private residence or live location. Any official
+  wanted/fugitive exception requires its dedicated activation and safety gates.
 - Do not publish complete private vehicle plates.
-- AI geolocation, OCR, and visual similarity are leads only and require independent confirmation.
+- AI geolocation, OCR and visual similarity are leads and require verification.

@@ -7,7 +7,7 @@
 **A parasitic investigation skill for AI agents.**  
 Adaptive research · verified sources · traceable evidence
 
-![Release](https://img.shields.io/badge/release-v1.4.1-A23B46?style=flat-square&labelColor=2B2F33)
+![Release](https://img.shields.io/badge/release-v1.5.0-A23B46?style=flat-square&labelColor=2B2F33)
 ![Discipline](https://img.shields.io/badge/discipline-OSINT-2F6F7E?style=flat-square&labelColor=2B2F33)
 ![Handling](https://img.shields.io/badge/handling-public_sources_only-A4772B?style=flat-square&labelColor=2B2F33)
 ![Runtime](https://img.shields.io/badge/runtime-agent_native-5D7048?style=flat-square&labelColor=2B2F33)
@@ -21,7 +21,7 @@ Adaptive research · verified sources · traceable evidence
 
 | Designation | Release | Division | Handling |
 | --- | --- | --- | --- |
-| `awesome-osint-operator` | Release: `v1.4.1` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
+| `awesome-osint-operator` | Release: `v1.5.0` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
 
 ## Overview
 
@@ -83,11 +83,43 @@ python scripts/verify_package.py
 
 The primary operating instructions live in [`SKILL.md`](SKILL.md). The remaining directories provide the catalog, playbooks, evidence tools, templates, and validation suite.
 
+## What's new in v1.5.0
+
+The entrypoint now routes by investigation depth instead of applying the full
+investigation procedure to every question. See [execution modes](references/execution-modes.md).
+
+- **Lookup / Standard / Deep:** match evidence work to ambiguity and requested precision. Lookup has no minimum tool/source quota; precise geolocation and guarded wanted-person work retain their specialized checks.
+- **Bounded completion:** return `resolved`, `bounded_uncertain` or `blocked`. Initial collection checkpoints are 2/6/12 rounds, with evidence-based extensions within user limits. Two no-progress rounds trigger reassessment, not automatic abandonment of useful work.
+- **Smaller context:** a focused entrypoint, one shared convergence gate, references loaded only when relevant, compact case state and short answers by default.
+- **Focused tools:** catalog search defaults to 3 matches; workflow selection defaults to its first stage and supports explicit stage selection. JSON defaults to compact fields.
+- **Less bookkeeping:** validate and append JSONL evidence batches together; initialize quick visual notes without full matrices, and upgrade later without overwriting existing files by default.
+
+Automatic skill discovery remains enabled with a narrower description. Explicit
+invocation still supports a simple lookup. A/B model trials have not been run for
+this release; smaller instruction/output payloads and passing script tests are
+not measured claims of lower reasoning usage, faster completion or higher solve rate.
+
+### CLI migration from v1.4.1
+
+| Change | New default / option | Preserve the former output |
+|---|---|---|
+| Search count | Up to 3 matches | `--top 10` |
+| Tool-selection scope | First stage only; choose another with `--stage` | `--all-stages` |
+| JSON tool fields | `id,name,url,risk_tier,score`; customize with `--fields` | `--json --full` |
+| Visual initialization | Full mode remains the CLI default; quick is opt-in | Existing `init` calls still work |
+
+`--fields` and `--full` require `--json` and cannot be combined. Search limits and
+per-stage limits must be positive integers. JSON consumers that need old fields
+should add `--full`; consumers that need every stage should also add `--all-stages`.
+The trajectory auditor's schema and finalization semantics are unchanged; completion
+outcomes belong in notes/reports, and optional actual usage belongs in a separate
+`run-metrics.jsonl`. No automatic usage collector is included.
+
 ## What's new in v1.4.1
 
 - Catalog searches return no matches when the query is unrelated; low-risk preference only ranks relevant results.
 - Visual scoring rejects non-finite values, negative weights and arithmetic overflow while preserving valid negative evidence scores.
-- Investigations may continue after a conclusion. Further investigation automatically supersedes the earlier conclusion; a new finalization must pass the recorded checks before becoming current. No fixed search order, retry limit or extra reopen action is required.
+- Investigations may continue after a conclusion. Further investigation automatically supersedes the earlier conclusion; a new finalization must pass the recorded checks before becoming current. The v1 audit does not impose a fixed search order, retry limit or extra reopen action; v1.5 execution budgets are separate guidance.
 
 See [reopening and finalization states](references/trajectory-evaluation.md#reopening-after-a-conclusion) for the advisory audit and strict-mode behavior.
 
@@ -116,21 +148,26 @@ The auditor flags patterns in recorded, annotated actions. It does not browse, r
 ### Search the catalog
 
 ```bash
-python scripts/search_catalog.py "domain DNS certificates history" --top 10
-python scripts/search_catalog.py "company ownership public filings" --top 10
+python scripts/search_catalog.py "domain DNS certificates history" --top 3
+python scripts/search_catalog.py "company ownership public filings" --top 3
 ```
 
 ### Select tools by workflow
 
 ```bash
-python scripts/select_tools.py --workflow domain --per-stage 2
-python scripts/select_tools.py --workflow image --per-stage 2
+python scripts/select_tools.py --workflow domain --list-stages
+python scripts/select_tools.py --workflow domain --stage dns-and-certificates
+python scripts/select_tools.py --workflow image --stage geolocation --json
+# Only for a requested full tool plan:
+python scripts/select_tools.py --workflow domain --all-stages
 ```
 
-### Open an evidence ledger
+### Record evidence when a persistent case is needed
+
+A first `add` initializes the ledger automatically. Simple lookups can keep their
+source and support note in the answer without creating files.
 
 ```bash
-python scripts/evidence_ledger.py init case/evidence.csv
 python scripts/evidence_ledger.py add case/evidence.csv \
   --claim "Example claim" \
   --source-url "https://example.org/source" \
@@ -140,10 +177,31 @@ python scripts/evidence_ledger.py add case/evidence.csv \
   --notes "What the source supports and what it does not"
 ```
 
+For a completed collection batch, put one object per line in a UTF-8 JSONL file:
+
+```json
+{"finding_id":"E1","claim":"Example claim","source_url":"https://example.org/source","source_type":"primary","confidence":"medium","supporting_note":"What the source supports"}
+```
+
+```bash
+python scripts/evidence_ledger.py add-batch case/evidence.csv --input case/findings.jsonl
+# Use --input - to read JSONL from standard input.
+```
+
+Batch keys use the single-add argument names with underscores (`notes` and `file`
+are supported). The whole batch is validated before the ledger changes; malformed
+records or unreadable source files do not leave partial evidence rows.
+Ledger writes use a shared exclusive lock: concurrent `init`, `add` and `add-batch`
+operations fail clearly instead of overwriting one another. Retry after the active
+writer finishes. If a process crashes and leaves its lock behind, remove the lock
+only after confirming no writer is still using that ledger; the error identifies it.
+
 ### Start a visual case
 
 ```bash
-python scripts/visual_case.py init case/image-001
+python scripts/visual_case.py init case/image-001 --mode quick
+# Add full templates only when the evidence gap needs them; existing files survive.
+python scripts/visual_case.py init case/image-001 --mode full
 python scripts/visual_case.py score case/image-001/location-candidates.csv
 ```
 
@@ -160,9 +218,18 @@ python scripts/trajectory_eval.py case/trajectory.json
 An audit is advisory; read the evaluation protocol before interpreting its metrics.
 
 ```bash
-python scripts/sync_catalog.py
 python scripts/verify_package.py
 python -m unittest discover -s tests -v
+```
+
+### Catalog maintenance
+
+Refresh the catalog only as an explicit maintenance operation, not during ordinary
+investigations. This downloads the upstream list and rewrites the local snapshot:
+
+```bash
+python scripts/sync_catalog.py
+python scripts/verify_package.py
 ```
 
 ## Operating doctrine
@@ -227,7 +294,9 @@ The Hunter must not drift from a bounded investigation into an invasive life dos
 
 ## Reporting standard
 
-Use this structure for an operational report:
+Default answers contain the conclusion, key sources and material uncertainty.
+Use the following structure only for requested full or audit reports; omit sections
+that do not support the deliverable:
 
 1. Executive summary
 2. Scope, authorization, and limitations
@@ -252,7 +321,8 @@ Use precise conclusion labels:
 
 | Asset | Role |
 | --- | --- |
-| [`SKILL.md`](SKILL.md) | Core operating doctrine and execution rules |
+| [`SKILL.md`](SKILL.md) | Focused entrypoint and conditional workflow routing |
+| [`references/execution-modes.md`](references/execution-modes.md) | Task depth, collection checkpoints and completion outcomes |
 | `references/catalog.json` / `references/catalog.csv` | Structured tool catalog |
 | `references/` | Safety policy, confidence rubric, taxonomy, query playbook, and source snapshot |
 | `workflows/` | Mission-specific procedures, including the guarded official wanted/fugitive workflow |

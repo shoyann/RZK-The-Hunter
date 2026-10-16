@@ -1,11 +1,60 @@
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import re
 import unicodedata
 from pathlib import Path
 from urllib.parse import urlparse
+
+COMPACT_TOOL_FIELDS = ('id', 'name', 'url', 'risk_tier', 'score')
+TOOL_OUTPUT_FIELDS = COMPACT_TOOL_FIELDS + (
+    'domain', 'category', 'subcategory', 'description', 'tags',
+    'risk_flags', 'risk_reasons', 'signals', 'source_line',
+)
+
+
+def positive_int(value: str) -> int:
+    try:
+        number = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError('must be a positive integer') from exc
+    if number < 1:
+        raise argparse.ArgumentTypeError('must be a positive integer')
+    return number
+
+
+def output_fields(value: str) -> tuple[str, ...]:
+    fields = tuple(dict.fromkeys(field.strip() for field in value.split(',')))
+    invalid = [field for field in fields if field not in TOOL_OUTPUT_FIELDS]
+    if invalid:
+        raise argparse.ArgumentTypeError(
+            f"unknown or empty fields: {', '.join(repr(field) for field in invalid)}; "
+            f"choose from {', '.join(TOOL_OUTPUT_FIELDS)}")
+    return fields
+
+
+def add_json_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument('--json', action='store_true',
+                        help='Output JSON; tool fields default to id,name,url,risk_tier,score')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--fields', type=output_fields, metavar='FIELD,...',
+                       help='Select comma-separated tool fields; requires --json')
+    group.add_argument('--full', action='store_true',
+                       help='Include all tool fields in pretty JSON (legacy detail format); requires --json')
+
+
+def validate_json_arguments(parser: argparse.ArgumentParser, args) -> None:
+    if (args.fields is not None or args.full) and not args.json:
+        parser.error('--fields and --full require --json')
+
+
+def project_tool(tool: dict, fields: tuple[str, ...] | None = None, full: bool = False) -> dict:
+    if full:
+        return tool
+    return {field: tool[field] for field in (fields or COMPACT_TOOL_FIELDS)}
+
 
 SKIP_TOP = {'📖 Table of Contents', 'Contributing', 'Credits', 'License'}
 GUARDED_CATEGORIES = {

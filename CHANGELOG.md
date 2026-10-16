@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 1.5.0
+
+- Added Lookup/Standard/Deep routing and bounded completion outcomes, keeping user hard budgets and guarded workflow requirements authoritative
+- Replaced the large default workflow with a focused entrypoint and conditional references; unified precise-conclusion rules and made compact reports/notes the default
+- Split visual investigation into coarse and precise work without fixed clue, candidate or tool quotas; retained exact-scene, independent-evidence and geometry checks for precise claims
+- Changed catalog search defaults to 3 results and compact JSON; added field projection, full-detail compatibility, stage selection and explicit all-stage plans
+- Added validated, atomic JSONL evidence batches and optional quick visual case initialization with non-destructive upgrades
+- Serialized ledger writes with an exclusive lock so concurrent single/batch additions cannot silently overwrite evidence
+- Kept the v1 trajectory auditor unchanged and documented separate optional usage records; no model A/B trial or end-to-end performance claim accompanies this release
+- Added CLI, batch-integrity, visual initialization and package regression coverage
+
 ## 1.4.1
 
 - Fixed unrelated catalog queries receiving a positive score solely from low-risk preference; retained English/Chinese matching and existing CLI no-result behavior

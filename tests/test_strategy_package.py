@@ -15,6 +15,7 @@ class StrategyPackageTests(unittest.TestCase):
         errors = []
         verify_package.verify_versions(errors)
         verify_package.verify_strategy_package(errors)
+        verify_package.verify_execution_package(errors)
         self.assertEqual(errors, [])
 
     def test_manifest_omission_is_caught(self):
@@ -31,6 +32,22 @@ class StrategyPackageTests(unittest.TestCase):
             with patch.object(verify_package, "ROOT", staging):
                 verify_package.verify_strategy_package(errors)
             self.assertTrue(any(missing in error for error in errors))
+
+    def test_execution_resources_must_be_packaged(self):
+        with tempfile.TemporaryDirectory() as folder:
+            staging = Path(folder)
+            entries = (ROOT / 'manifest.txt').read_text().splitlines()
+            for rel in entries:
+                destination = staging / rel
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / rel, destination)
+            for missing in ('references/execution-modes.md', 'tests/test_evidence_ledger.py'):
+                with self.subTest(missing=missing):
+                    (staging / 'manifest.txt').write_text('\n'.join(x for x in entries if x != missing))
+                    errors = []
+                    with patch.object(verify_package, 'ROOT', staging):
+                        verify_package.verify_execution_package(errors)
+                    self.assertTrue(any(missing in error for error in errors))
 
 
 if __name__ == "__main__":

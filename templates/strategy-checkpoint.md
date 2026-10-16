@@ -1,45 +1,36 @@
 # Strategy checkpoint
 
-Use at a meaningful branch decision or stall, not every click. Link existing
-evidence and hypothesis IDs. Omit inapplicable sections.
+Optional: use inside existing case notes at a meaningful branch decision or
+stagnation review. Link evidence/hypothesis IDs, omit irrelevant fields and
+reuse unchanged checks. This is not a per-call form.
+[Execution modes](../references/execution-modes.md) define the budget and ending
+rules; do not duplicate those rules here.
 
-- Exact unresolved question / required time:
-- Current anchor and unverified dependencies:
-- Pending fastest falsifier (source/artifact + discriminating comparison):
-- Evidence change since last checkpoint (or none):
+- Unresolved question / requested precision / relevant time:
+- Material evidence change since the last checkpoint:
+- Current anchor and cheapest untested discriminator:
+- Selected action, expected discriminating observation and reason:
+- Result / evidence reference / candidate or confidence change:
+- Continue with a finite extension, or ending outcome and remaining uncertainty:
 
-| Candidate action | Hypothesis / question | Representation / habitat | Expected observation; effect on belief | Cost / access / fidelity / risk |
-|---|---|---|---|---|
+## Alternatives (only if the decision needs comparison)
 
-- Selected action and reason:
-- Why any cheaper falsifier is deferred:
-- Actual result and evidence reference:
-- Hypothesis / candidate-set change, or inconclusive:
-- Next cheapest discriminator / stopping condition:
+| Feasible action | Expected observation and effect on the answer | Relevant cost/access constraint |
+|---|---|---|
 
-## Query evolution (when repeating)
+## Stagnation review (only when triggered)
 
-| Family / objective | Representation / habitat | Attempts and underlying source clusters | New discriminator / evidence change | Continue or pivot; why |
-|---|---|---|---|---|
+- Repeated objective / representation / source lineage:
+- Why the proposed pivot can produce different evidence:
+- Result of that pivot, or why no worthwhile feasible action remains:
 
-## Time-sensitive evidence
+## Deferred clue (only if it may matter later)
 
-| Evidence ID | Required task time | Source/access | Content | Capture | Upload | Event | Archive | Match / uncertainty |
-|---|---|---|---|---|---|---|---|---|
+- Observation / evidence ID / uncertainty:
+- Concrete revisit trigger / status:
 
-Unknown timestamps stay unknown. A collection date is not a visit date.
+## Reusable method (only when justified)
 
-## Deferred clues
-
-| ID | Raw observation / source | Salience and uncertainty | Possible relation (hypothesis only) | Revisit trigger | Status / resolution reason |
-|---|---|---|---|---|---|
-
-Statuses: parked / activated / resolved / discarded. Do not force connections.
-
-## Reusable technique (only when transfer is justified)
-
-- Problem signature and prerequisites:
-- Method, cheapest falsifier and evidence habitat:
-- Verification contract / failure modes / safety limits:
-- Source case reference (no answer memorization or unrelated personal data):
-- Observed successes/failures and last validation; unmeasured stays unmeasured:
+- Problem signature, prerequisites and method:
+- Falsifier, verification contract and observed limits:
+- Source case reference; omit answer memorization and unrelated personal data:

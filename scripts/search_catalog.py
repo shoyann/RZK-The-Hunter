@@ -5,7 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
-from cataloglib import load_catalog, score_tool
+from cataloglib import (add_json_arguments, load_catalog, positive_int, project_tool,
+                        score_tool, validate_json_arguments)
 
 RISK_ORDER = {'low': 0, 'guarded': 1, 'restricted': 2}
 
@@ -19,12 +20,13 @@ def main() -> int:
     ap = argparse.ArgumentParser(description='Search the structured Awesome OSINT catalog.')
     ap.add_argument('query')
     ap.add_argument('--catalog', default=str(Path(__file__).resolve().parents[1] / 'references' / 'catalog.json'))
-    ap.add_argument('--top', type=int, default=10)
+    ap.add_argument('--top', type=positive_int, default=3, help='Maximum results (default: 3)')
     ap.add_argument('--category', action='append', help='Exact category filter; repeatable')
     ap.add_argument('--max-risk', choices=['low', 'guarded', 'restricted'], default='guarded')
     ap.add_argument('--include-restricted', action='store_true', help='Equivalent to --max-risk restricted; use only for authorized defensive triage')
-    ap.add_argument('--json', action='store_true')
+    add_json_arguments(ap)
     args = ap.parse_args()
+    validate_json_arguments(ap, args)
 
     max_risk = 'restricted' if args.include_restricted else args.max_risk
     catalog = load_catalog(args.catalog)
@@ -35,10 +37,12 @@ def main() -> int:
         score = score_tool(tool, args.query)
         if score > 0: rows.append((score, tool))
     rows.sort(key=lambda x: (-x[0], x[1]['risk_tier'], x[1]['name'].casefold()))
-    rows = rows[:max(1, args.top)]
+    rows = rows[:args.top]
 
     if args.json:
-        print(json.dumps([{'score': round(s, 2), **t} for s, t in rows], ensure_ascii=False, indent=2))
+        output = [project_tool({'score': round(s, 2), **t}, args.fields, args.full) for s, t in rows]
+        print(json.dumps(output, ensure_ascii=False, indent=2 if args.full else None,
+                         separators=None if args.full else (',', ':')))
         return 0
     if not rows:
         print('No matching tools. Try broader terms or a category filter.')

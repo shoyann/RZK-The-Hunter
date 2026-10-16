@@ -1,7 +1,7 @@
 {
   "name": "awesome-osint-operator",
   "display_name": "Awesome OSINT Operator",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "entrypoint": "SKILL.md",
   "languages": [
     "en",
@@ -30,6 +30,11 @@
     "adaptive-next-action-strategy",
     "representation-and-evidence-habitat-pivots",
     "deferred-clue-checkpoints",
-    "advisory-trajectory-audit"
+    "advisory-trajectory-audit",
+    "task-depth-routing",
+    "bounded-investigation-completion",
+    "stage-scoped-tool-selection",
+    "batch-evidence-logging",
+    "quick-visual-case"
   ]
 }
