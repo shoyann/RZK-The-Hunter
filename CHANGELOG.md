@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.6.0
+
+- Added an optional offline visual evidence-board renderer for an original image, reference photographs or maps, source credits, matching observations and unresolved questions
+- Preserved aspect ratio and source files, recorded input hashes and display transformations in a provenance sidecar, and kept unverified camera position visible by default
+- Added explicit camera-verification evidence requirements, output/input collision checks and multilingual font support; rendering itself does not validate claims or calibrate confidence
+- Routed visual investigations to this helper only when a comparison is useful or requested; no mandatory rendering stage, extra search quota or performance claim
+- Added renderer regression coverage and included its optional Pillow dependency in CI
+
 ## 1.5.0
 
 - Added Lookup/Standard/Deep routing and bounded completion outcomes, keeping user hard budgets and guarded workflow requirements authoritative

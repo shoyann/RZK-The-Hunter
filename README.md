@@ -7,7 +7,7 @@
 **A parasitic investigation skill for AI agents.**  
 Adaptive research · verified sources · traceable evidence
 
-![Release](https://img.shields.io/badge/release-v1.5.0-A23B46?style=flat-square&labelColor=2B2F33)
+![Release](https://img.shields.io/badge/release-v1.6.0-A23B46?style=flat-square&labelColor=2B2F33)
 ![Discipline](https://img.shields.io/badge/discipline-OSINT-2F6F7E?style=flat-square&labelColor=2B2F33)
 ![Handling](https://img.shields.io/badge/handling-public_sources_only-A4772B?style=flat-square&labelColor=2B2F33)
 ![Runtime](https://img.shields.io/badge/runtime-agent_native-5D7048?style=flat-square&labelColor=2B2F33)
@@ -21,7 +21,7 @@ Adaptive research · verified sources · traceable evidence
 
 | Designation | Release | Division | Handling |
 | --- | --- | --- | --- |
-| `awesome-osint-operator` | Release: `v1.5.0` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
+| `awesome-osint-operator` | Release: `v1.6.0` | Rozooka Industries / Intelligence Systems | Public-source intelligence only |
 
 ## Overview
 
@@ -83,6 +83,19 @@ python scripts/verify_package.py
 
 The primary operating instructions live in [`SKILL.md`](SKILL.md). The remaining directories provide the catalog, playbooks, evidence tools, templates, and validation suite.
 
+## What's new in v1.6.0
+
+An optional [visual evidence board](references/visual-evidence-board.md) puts the
+supplied image next to inspected reference photographs or a map, with source
+credits, specific matches and unresolved questions. The offline renderer preserves
+image proportions and writes a JSON provenance sidecar with source-file hashes.
+Camera position remains explicitly unverified unless supporting evidence is supplied.
+
+Use it when the comparison helps explain a finding or the user asks for a board.
+It is not a new investigation requirement, a matching model or proof of accuracy.
+Only the renderer needs Pillow; the existing investigation helpers remain usable
+without it. No comparative performance claim accompanies this feature.
+
 ## What's new in v1.5.0
 
 The entrypoint now routes by investigation depth instead of applying the full
@@ -95,8 +108,8 @@ investigation procedure to every question. See [execution modes](references/exec
 - **Less bookkeeping:** validate and append JSONL evidence batches together; initialize quick visual notes without full matrices, and upgrade later without overwriting existing files by default.
 
 Automatic skill discovery remains enabled with a narrower description. Explicit
-invocation still supports a simple lookup. A/B model trials have not been run for
-this release; smaller instruction/output payloads and passing script tests are
+invocation still supports a simple lookup. The v1.5.0 release did not include a
+controlled model benchmark; smaller instruction/output payloads and passing script tests are
 not measured claims of lower reasoning usage, faster completion or higher solve rate.
 
 ### CLI migration from v1.4.1
@@ -207,6 +220,22 @@ python scripts/visual_case.py score case/image-001/location-candidates.csv
 
 Weights must be finite and non-negative; match scores must be finite and between -2 and +2. Negative match scores preserve contrary evidence. Invalid numbers or overflowing totals produce an input error without a ranking.
 
+### Show a visual comparison when useful
+
+Prepare a JSON spec using [the board guide](references/visual-evidence-board.md)
+and local images that have already been inspected:
+
+```bash
+uv run scripts/evidence_board.py case/board.json --out case/evidence.png
+# Or install Pillow in your environment, then use python instead of uv run.
+# For a language unsupported by your default font, add --font /path/to/font.ttf.
+```
+
+The PNG carries source credits and limitations; its JSON sidecar preserves
+provenance for review. Neither artifact verifies a match automatically. Inspect
+the rendered board before sharing it. User photographs and private case material
+should remain in their case directory, outside this public skill package.
+
 ### Audit and verify
 
 Optionally audit a recorded case using the documented trace schema:
@@ -219,6 +248,7 @@ An audit is advisory; read the evaluation protocol before interpreting its metri
 
 ```bash
 python scripts/verify_package.py
+python -m pip install 'Pillow>=10.4'
 python -m unittest discover -s tests -v
 ```
 

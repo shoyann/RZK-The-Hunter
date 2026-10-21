@@ -1,7 +1,7 @@
 {
   "name": "awesome-osint-operator",
   "display_name": "Awesome OSINT Operator",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "entrypoint": "SKILL.md",
   "languages": [
     "en",
@@ -35,6 +35,7 @@
     "bounded-investigation-completion",
     "stage-scoped-tool-selection",
     "batch-evidence-logging",
-    "quick-visual-case"
+    "quick-visual-case",
+    "visual-evidence-board"
   ]
 }

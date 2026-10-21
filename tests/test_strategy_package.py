@@ -16,6 +16,7 @@ class StrategyPackageTests(unittest.TestCase):
         verify_package.verify_versions(errors)
         verify_package.verify_strategy_package(errors)
         verify_package.verify_execution_package(errors)
+        verify_package.verify_evidence_board_package(errors)
         self.assertEqual(errors, [])
 
     def test_manifest_omission_is_caught(self):
@@ -47,6 +48,22 @@ class StrategyPackageTests(unittest.TestCase):
                     errors = []
                     with patch.object(verify_package, 'ROOT', staging):
                         verify_package.verify_execution_package(errors)
+                    self.assertTrue(any(missing in error for error in errors))
+
+    def test_evidence_board_resources_must_be_packaged(self):
+        with tempfile.TemporaryDirectory() as folder:
+            staging = Path(folder)
+            entries = (ROOT / 'manifest.txt').read_text().splitlines()
+            for rel in entries:
+                destination = staging / rel
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / rel, destination)
+            for missing in ('references/visual-evidence-board.md', 'scripts/evidence_board.py', 'tests/test_evidence_board.py'):
+                with self.subTest(missing=missing):
+                    (staging / 'manifest.txt').write_text('\n'.join(x for x in entries if x != missing))
+                    errors = []
+                    with patch.object(verify_package, 'ROOT', staging):
+                        verify_package.verify_evidence_board_package(errors)
                     self.assertTrue(any(missing in error for error in errors))
 
 

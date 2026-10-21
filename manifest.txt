@@ -22,6 +22,8 @@ references/taxonomy.md
 references/tool-selection.md
 references/trajectory-evaluation.md
 references/visual-clue-taxonomy.md
+references/visual-evidence-board.md
+scripts/evidence_board.py
 scripts/cataloglib.py
 scripts/evidence_ledger.py
 scripts/search_catalog.py
@@ -42,6 +44,7 @@ templates/strategy-checkpoint.md
 templates/visual-clue-inventory.csv
 tests/test_catalog.py
 tests/test_evidence_ledger.py
+tests/test_evidence_board.py
 tests/test_tool_selection.py
 tests/test_visual_case.py
 tests/test_trajectory_eval.py

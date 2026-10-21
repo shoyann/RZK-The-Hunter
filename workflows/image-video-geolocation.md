@@ -142,6 +142,14 @@ relevant geometry/time explanation, and material uncertainty or contradiction.
 Add a clue inventory, candidate comparison or full geolocation report only when
 the complexity or requested deliverable warrants it.
 
+When side-by-side images would make the evidence easier to assess, or the user
+requests one, optionally create a [visual evidence board](../references/visual-evidence-board.md)
+from already inspected local images. Include sources, specific matches and material
+uncertainties. A map is useful only when it tests the relevant spatial relationship;
+do not collect extra imagery just to fill panels. A building match does not verify
+the camera position, and the board must keep that distinction visible. Skip the
+board when a short answer suffices or it would consume the remaining search budget.
+
 ## Boundaries
 
 - Do not identify a private person by face.

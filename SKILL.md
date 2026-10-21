@@ -3,7 +3,7 @@ name: awesome-osint-operator
 description: Conduct scoped public-source investigations, provenance checks, and evidence-based OSINT research. Use for explicit investigations or disputed claims needing source verification; not routine coding, writing, or ordinary factual questions unless the user asks to use The Hunter.
 license: CC-BY-SA-4.0
 metadata:
-  version: 1.5.0
+  version: 1.6.0
 ---
 
 # The Hunter
@@ -88,6 +88,9 @@ change the result; distinguish formatting errors from factual failure.
 
 Default output: answer, key sources and material uncertainty in the user's language.
 Use detailed reports in `templates/` only for Deep/audit deliverables or on request;
-omit irrelevant sections. [Trajectory auditing](references/trajectory-evaluation.md)
+omit irrelevant sections. For a useful visual comparison or a requested evidence
+board, see [visual evidence boards](references/visual-evidence-board.md). Rendering
+is optional and does not establish a match or improve a finding's confidence.
+[Trajectory auditing](references/trajectory-evaluation.md)
 is optional, advisory and separate from task completion. Preserve `ATTRIBUTION.md`
 and `LICENSE.txt` when redistributing the package.

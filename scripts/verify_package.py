@@ -166,6 +166,24 @@ def verify_execution_package(errors: list[str]) -> None:
         errors.append(f'Execution package check failed: {exc}')
 
 
+def verify_evidence_board_package(errors: list[str]) -> None:
+    """Keep the optional renderer runnable from a manifest-built release."""
+    required = {
+        'references/visual-evidence-board.md',
+        'scripts/evidence_board.py',
+        'tests/test_evidence_board.py',
+    }
+    try:
+        entries = set((ROOT / 'manifest.txt').read_text(encoding='utf-8').splitlines())
+        for rel in sorted(required):
+            if rel not in entries or not (ROOT / rel).is_file():
+                errors.append(f'Evidence board resource missing from package: {rel}')
+        if 'references/visual-evidence-board.md' not in (ROOT / 'SKILL.md').read_text(encoding='utf-8'):
+            errors.append('SKILL.md missing optional evidence board route')
+    except Exception as exc:
+        errors.append(f'Evidence board package check failed: {exc}')
+
+
 def main() -> int:
     errors: list[str] = []
     manifest = ROOT / 'manifest.txt'
@@ -187,6 +205,7 @@ def main() -> int:
     verify_wanted_person_mode(errors)
     verify_strategy_package(errors)
     verify_execution_package(errors)
+    verify_evidence_board_package(errors)
 
     try:
         catalog = json.loads((ROOT / 'references/catalog.json').read_text(encoding='utf-8'))
@@ -219,7 +238,7 @@ def main() -> int:
         for error in errors:
             print('-', error)
         return 1
-    print('OK — package structure, versions, wanted-person/AIS/execution routing, catalog, snapshot hash, attribution, URLs, and Python scripts verified.')
+    print('OK — package structure, versions, wanted-person/AIS/execution/evidence-board routing, catalog, snapshot hash, attribution, URLs, and Python scripts verified.')
     return 0
 
 
