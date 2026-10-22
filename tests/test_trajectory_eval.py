@@ -117,6 +117,16 @@ class TrajectoryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit(trace(final(1, made_up=True)))
 
+    def test_finalize_must_be_terminal(self):
+        with self.assertRaisesRegex(ValueError, "cannot follow a finalize action"):
+            audit(trace(final(1), action(2, kind="falsify", hypothesis="H1",
+                               contradicts=["H1"], progress=["contradiction"],
+                               evidence_refs=["fixture:late-conflict"])))
+
+    def test_multiple_finalizations_rejected(self):
+        with self.assertRaisesRegex(ValueError, "cannot follow a finalize action"):
+            audit(trace(final(1), final(2)))
+
     def test_unsubstantiated_progress_rejected(self):
         with self.assertRaises(ValueError):
             audit(trace(action(1, progress=["decisive"])))
