@@ -41,7 +41,7 @@ The Hunter has been used in near-black-box OSINT challenge runs: the original ta
 
 | Evaluation | Result | Window | Steering |
 | --- | ---: | --- | --- |
-| OSINT UK | **Global #4** | Within 48 hours | Low |
+| OSINT UK | **Global #1** | Within 48 hours | Low |
 | OSINT Industries | **Global #8** | Within 48 hours | Low |
 
 > [!NOTE]
