@@ -103,14 +103,29 @@ class EvidenceLedgerTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertEqual(len(self.read_rows()), 2)
 
+    def test_single_add_after_missing_final_newline(self):
+        self.assertEqual(self.batch({'claim': 'Old evidence'}).returncode, 0)
+        original = self.ledger.read_bytes().rstrip(b'\r\n')
+        self.ledger.write_bytes(original)
+        result = self.run_cli('add', self.ledger, '--claim', 'New evidence')
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual([row['claim'] for row in self.read_rows()], ['Old evidence', 'New evidence'])
+        self.assertTrue(self.ledger.read_bytes().startswith(original))
+
     def test_invalid_existing_header_is_not_overwritten(self):
         self.ledger.parent.mkdir()
         self.ledger.write_text('unrelated,columns\nkeep,this\n', encoding='utf-8')
         before = self.ledger.read_bytes()
-        result = self.batch({'claim': 'Valid'})
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('unexpected CSV header', result.stdout)
-        self.assertEqual(self.ledger.read_bytes(), before)
+        for command in ('add', 'add-batch'):
+            with self.subTest(command=command):
+                self.ledger.write_bytes(before)
+                if command == 'add':
+                    result = self.run_cli('add', self.ledger, '--claim', 'Valid')
+                else:
+                    result = self.batch({'claim': 'Valid'})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('unexpected CSV header', result.stdout)
+                self.assertEqual(self.ledger.read_bytes(), before)
 
     def test_failed_commit_keeps_original_and_removes_temporary_file(self):
         evidence_ledger.init(self.ledger, False)

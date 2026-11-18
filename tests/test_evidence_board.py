@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 try:
-    from PIL import Image, ImageFont
+    from PIL import Image, ImageFont, ImageOps
 except ImportError:
     Image = None
 
@@ -79,6 +79,28 @@ class EvidenceBoardTests(unittest.TestCase):
         self.assertEqual(saved["assets"][1]["source"], "https://example.org/reference")
         for path, content in originals.items():
             self.assertEqual(path.read_bytes(), content)
+
+    def test_input_changes_during_render_preserve_original_digests(self):
+        self.write_spec()
+        spec_digest = hashlib.sha256(self.spec.read_bytes()).hexdigest()
+        subject_digest = hashlib.sha256(self.subject.read_bytes()).hexdigest()
+        contain = ImageOps.contain
+
+        def change_inputs_after_decode(*args, **kwargs):
+            Image.new("RGB", (240, 120), "blue").save(self.subject)
+            self.spec.write_text("{}", encoding="utf-8")
+            return contain(*args, **kwargs)
+
+        with patch.object(ImageOps, "contain", side_effect=change_inputs_after_decode):
+            board.render(self.spec, self.output)
+        saved = json.loads(self.output.with_suffix(".json").read_text(encoding="utf-8"))
+        subject = saved["assets"][0]
+        left, top, right, bottom = subject["display_box"]
+        with Image.open(self.output) as rendered:
+            red, _, blue = rendered.getpixel(((left + right) // 2, (top + bottom) // 2))
+        self.assertGreater(red, blue)
+        self.assertEqual(subject["sha256"], subject_digest)
+        self.assertEqual(saved["spec_sha256"], spec_digest)
 
     def test_invalid_schema_and_claims_fail_before_writing(self):
         mutations = [

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.6.1
+
+- Single evidence entries now use the same header validation, newline handling and atomic writes as batch entries.
+- Visual evidence boards hash the exact image and specification bytes used to render each board.
+- Catalog refreshes maintain snapshot details in ATTRIBUTION.md. The README now focuses on installation and everyday use.
+
 ## 1.6.0
 
 - Added an optional offline visual evidence-board renderer for an original image, reference photographs or maps, source credits, matching observations and unresolved questions

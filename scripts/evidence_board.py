@@ -16,6 +16,7 @@ import shutil
 import sys
 import tempfile
 import unicodedata
+from contextlib import contextmanager
 from datetime import datetime, timezone
 
 
@@ -33,9 +34,11 @@ def keys(value, allowed, name):
 
 
 def load_spec(path):
-    if path.stat().st_size > 100_000:
+    with path.open("rb") as source:
+        spec_bytes = source.read(100_001)
+    if len(spec_bytes) > 100_000:
         raise ValueError("Spec exceeds 100 KB")
-    spec = json.loads(path.read_text(encoding="utf-8"))
+    spec = json.loads(spec_bytes.decode("utf-8"))
     keys(spec, ("schema_version", "title", "subject", "references", "matches", "uncertainties", "camera"), "spec")
     if type(spec.get("schema_version")) is not int or spec["schema_version"] != 1:
         raise ValueError("schema_version must be 1")
@@ -64,11 +67,24 @@ def load_spec(path):
         raise ValueError("camera.status must be unverified or verified")
     if camera["status"] == "verified" or "evidence" in camera:
         camera["evidence"] = nonempty(camera.get("evidence"), "camera.evidence", 1000)
-    return spec
+    return spec, hashlib.sha256(spec_bytes).hexdigest()
 
 
 def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+@contextmanager
+def image_snapshot(path):
+    """Hash and decode the same bytes even if the source is edited mid-render."""
+    digest = hashlib.sha256()
+    with tempfile.SpooledTemporaryFile(max_size=4 * 1024 * 1024) as snapshot:
+        with path.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(chunk)
+                snapshot.write(chunk)
+        snapshot.seek(0)
+        yield snapshot, digest.hexdigest()
 
 
 def check_outputs(outputs, inputs, force):
@@ -148,7 +164,7 @@ def render(spec_path, out, font_path=None, force=False):
     spec_path, out = spec_path.resolve(), out.resolve()
     if out.suffix.lower() != ".png":
         raise ValueError("--out must have a .png extension")
-    spec = load_spec(spec_path)
+    spec, spec_digest = load_spec(spec_path)
     assets = [spec["subject"]] + spec["references"]
     sidecar = out.with_suffix(".json")
     check_outputs((out, sidecar), [spec_path] + [a["path"] for a in assets], force)
@@ -218,24 +234,25 @@ def render(spec_path, out, font_path=None, force=False):
     draw = ImageDraw.Draw(canvas)
     provenance = []
     for asset, box in panels:
-        try:
-            original = Image.open(asset["path"])
-        except Image.DecompressionBombError as exc:
-            raise ValueError("Image exceeds Pillow's safe pixel limit; supply a documented smaller derivative") from exc
-        with original:
-            if original.width * original.height > 50_000_000 or max(original.size) > 20000:
-                raise ValueError("Input images must be at most 50 megapixels and 20000 pixels per side")
-            if getattr(original, "n_frames", 1) > 1:
-                raise ValueError("Animated/multi-frame images are unsupported; supply an explicit frame")
-            original_size = list(original.size)
-            orientation = original.getexif().get(274, 1)
-            upright = ImageOps.exif_transpose(original).convert("RGBA")
-            display = ImageOps.contain(upright, (box[2] - box[0], box[3] - box[1]), Image.Resampling.LANCZOS)
+        with image_snapshot(asset["path"]) as (snapshot, image_digest):
+            try:
+                original = Image.open(snapshot)
+            except Image.DecompressionBombError as exc:
+                raise ValueError("Image exceeds Pillow's safe pixel limit; supply a documented smaller derivative") from exc
+            with original:
+                if original.width * original.height > 50_000_000 or max(original.size) > 20000:
+                    raise ValueError("Input images must be at most 50 megapixels and 20000 pixels per side")
+                if getattr(original, "n_frames", 1) > 1:
+                    raise ValueError("Animated/multi-frame images are unsupported; supply an explicit frame")
+                original_size = list(original.size)
+                orientation = original.getexif().get(274, 1)
+                upright = ImageOps.exif_transpose(original).convert("RGBA")
+                display = ImageOps.contain(upright, (box[2] - box[0], box[3] - box[1]), Image.Resampling.LANCZOS)
         x, y = box[0] + (box[2] - box[0] - display.width) // 2, box[1] + (box[3] - box[1] - display.height) // 2
         draw.rectangle(box, fill="#e2e7ea")
         canvas.paste(display, (x, y), display)
         provenance.append({"image": asset["image"], "caption": asset["caption"], "source": asset["source"],
-                           "sha256": sha256(asset["path"]), "original_size": original_size,
+                           "sha256": image_digest, "original_size": original_size,
                            "display_box": [x, y, x + display.width, y + display.height],
                            "transformations": {"fit": "contain", "cropped": False, "stretched": False,
                                                "exif_orientation": orientation, "exif_transpose": True,
@@ -245,7 +262,7 @@ def render(spec_path, out, font_path=None, force=False):
             draw.text((block["x"], block["y"] + index * block["step"]), line,
                       font=fonts[block["size"]], fill=block["color"], anchor="lt")
     record = {"schema_version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
-              "title": spec["title"], "spec_sha256": sha256(spec_path), "board_size": [width, height],
+              "title": spec["title"], "spec_sha256": spec_digest, "board_size": [width, height],
               "font": str(selected_font), "assets": provenance,
               "claims": {"matches": [{"text": item, "status": "analyst_assertion"} for item in spec["matches"]],
                          "uncertainties": spec["uncertainties"],

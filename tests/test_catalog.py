@@ -1,6 +1,9 @@
+import hashlib
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -13,6 +16,31 @@ class CatalogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.catalog = load_catalog(ROOT / 'references/catalog.json')
+
+    def test_offline_refresh_keeps_snapshot_metadata_in_attribution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('README.md', 'ATTRIBUTION.md'):
+                shutil.copyfile(ROOT / name, root / name)
+            readme = (root / 'README.md').read_bytes()
+            old_hash = self.catalog['source']['snapshot_sha256'].encode()
+            self.assertNotIn(old_hash, readme)
+            self.assertIn(b'(ATTRIBUTION.md)', readme)
+            source = root / 'upstream.md'
+            source.write_bytes(b'## Archives\n\n* [Example](https://example.org/) - Sample archive.\n')
+            result = subprocess.run(
+                [sys.executable, str(ROOT / 'scripts/sync_catalog.py'), '--from-file', str(source),
+                 '--output-dir', str(root / 'references')], capture_output=True, text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            metadata = load_catalog(root / 'references/catalog.json')['source']
+            snapshot = (root / 'references/source/awesome-osint-README.md').read_bytes()
+            self.assertEqual(metadata['snapshot_sha256'], hashlib.sha256(snapshot).hexdigest())
+            attribution = (root / 'ATTRIBUTION.md').read_text(encoding='utf-8')
+            self.assertIn(metadata['snapshot_sha256'], attribution)
+            self.assertIn(metadata['retrieved_at'], attribution)
+            self.assertNotIn(old_hash.decode(), attribution)
+            self.assertEqual((root / 'README.md').read_bytes(), readme)
 
     def test_catalog_size(self):
         self.assertGreater(self.catalog['stats']['tools'], 1000)

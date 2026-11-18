@@ -108,10 +108,7 @@ def prepare_row(values: dict) -> dict:
 
 def add(path: Path, args) -> None:
     row = prepare_row({field: getattr(args, field) for field in (*DEFAULTS, 'claim')})
-    with ledger_lock(path) as locked_path:
-        if not locked_path.exists(): _init_unlocked(locked_path, False)
-        with locked_path.open('a', encoding='utf-8', newline='') as f:
-            csv.DictWriter(f, fieldnames=FIELDS).writerow(row)
+    append_batch(path, [row])
 
 
 def read_batch(handle) -> list[dict]:

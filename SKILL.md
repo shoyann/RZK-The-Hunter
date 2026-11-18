@@ -3,7 +3,7 @@ name: awesome-osint-operator
 description: Conduct scoped public-source investigations, provenance checks, and evidence-based OSINT research. Use for explicit investigations or disputed claims needing source verification; not routine coding, writing, or ordinary factual questions unless the user asks to use The Hunter.
 license: CC-BY-SA-4.0
 metadata:
-  version: 1.6.0
+  version: 1.6.1
 ---
 
 # The Hunter

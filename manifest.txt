@@ -4,6 +4,7 @@ LICENSE.txt
 README.md
 SKILL.md
 VERSION
+assets/the-hunter-icon.png
 examples/README.md
 examples/domain-investigation.md
 examples/misinformation-verification.md

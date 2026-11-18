@@ -69,13 +69,6 @@ def update_attribution(package_root: Path, generated: str, digest: str) -> None:
         text = re.sub(r'(?m)^- Snapshot SHA-256: `[^`]+`$', f'- Snapshot SHA-256: `{digest}`', text)
         path.write_text(text, encoding='utf-8')
 
-    readme = package_root / 'README.md'
-    if readme.exists():
-        text = readme.read_text(encoding='utf-8')
-        text = re.sub(r'快照获取时间：`[^`]+`，SHA-256：`[^`]+`。',
-                      f'快照获取时间：`{generated}`，SHA-256：`{digest}`。', text)
-        readme.write_text(text, encoding='utf-8')
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(description='Refresh and parse the upstream Awesome OSINT README.')
@@ -92,7 +85,7 @@ def main() -> int:
         catalog = parse_readme(text, generated, args.url, DEFAULT_REPO)
         out = Path(args.output_dir)
         (out / 'source').mkdir(parents=True, exist_ok=True)
-        (out / 'source' / 'awesome-osint-README.md').write_text(text, encoding='utf-8')
+        (out / 'source' / 'awesome-osint-README.md').write_bytes(text.encode('utf-8'))
         (out / 'catalog.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         write_csv(catalog, out / 'catalog.csv')
         write_taxonomy(catalog, out / 'taxonomy.md')
